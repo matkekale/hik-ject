@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Interaktif Fungsi Akar</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts & MathJax untuk Render Formula Matematika -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+    .font-mono {
+      font-family: 'Fira Code', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
+
+  <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6">
+    
+    <!-- Header Title & Formula -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div>
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          Kalkulator Fungsi Akar
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">
+          Evaluasi fungsi dua variabel $f(x,y)$
+        </p>
+      </div>
+      
+      <!-- Display Formula -->
+      <div class="bg-slate-800/80 px-4 py-2.5 rounded-2xl border border-slate-700/50 flex items-center justify-center self-start sm:self-auto">
+        <span class="text-lg font-medium text-cyan-300">
+          \( f(x,y) = \sqrt{x} + \sqrt{y} \)
+        </span>
+      </div>
+    </div>
+
+    <!-- 1. Interactive Inputs Deck (DI ATAS) -->
+    <form id="calc-form" onsubmit="handleSubmit(event)" class="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Input X Controls -->
+        <div class="space-y-2">
+          <label for="input-x" class="text-sm font-semibold text-cyan-400 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span> Nilai Variabel X
+          </label>
+          <input type="number" id="input-x" value="9" step="any" placeholder="Nilai X..." class="w-full bg-slate-900 border border-slate-700 text-cyan-300 font-mono text-base px-4 py-2.5 rounded-xl focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+        </div>
+
+        <!-- Input Y Controls -->
+        <div class="space-y-2">
+          <label for="input-y" class="text-sm font-semibold text-blue-400 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span> Nilai Variabel Y
+          </label>
+          <input type="number" id="input-y" value="16" step="any" placeholder="Nilai Y..." class="w-full bg-slate-900 border border-slate-700 text-blue-300 font-mono text-base px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2 cursor-pointer">
+        Hitung Nilai
+      </button>
+    </form>
+
+    <!-- 2. Result & Step Breakdown Panel (DI BAWAH) -->
+    <div class="space-y-4 bg-slate-800/40 border border-slate-800 p-5 rounded-2xl">
+      <!-- KPI Result Display -->
+      <div id="result-card" class="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 p-5 rounded-2xl text-center space-y-1">
+        <span class="text-xs uppercase text-slate-400 tracking-wider font-medium">Hasil / Jawaban Output ($z$)</span>
+        <div id="z-output" class="text-4xl font-bold font-mono text-cyan-400">7,000</div>
+        <div id="status-badge" class="text-xs text-emerald-400 pt-1 font-medium">✓ Nilai Real Terdefinisi</div>
+      </div>
+
+      <!-- Step Calculation Breakdown -->
+      <div class="space-y-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Rincian Langkah Perhitungan</span>
+        <div id="step-breakdown" class="bg-slate-950 border border-slate-800 p-4 rounded-xl font-mono text-sm text-slate-300 space-y-2 leading-relaxed">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Catatan Matematika -->
+    <div class="text-xs text-slate-500 flex items-start gap-2 bg-slate-950/30 p-3 rounded-xl border border-slate-800/50">
+      <span class="text-slate-400 font-bold">ℹ</span>
+      <span>
+        Syarat domain $f(x,y) \in \mathbb{R}$: Nilai $x \ge 0$ dan $y \ge 0$.
+      </span>
+    </div>
+
+  </div>
+
+  <script>
+    // Helper function to format numbers with comma as decimal separator
+    function formatNumberID(num, decimals = 3) {
+      if (isNaN(num)) return '-';
+      // Convert float dot separator to comma separator
+      let parts = num.toFixed(decimals).split('.');
+      if (decimals === 0) return parts[0];
+      return parts[0] + ',' + parts[1];
+    }
+
+    function calculate() {
+      const xInput = document.getElementById('input-x').value;
+      const yInput = document.getElementById('input-y').value;
+
+      const x = parseFloat(xInput);
+      const y = parseFloat(yInput);
+
+      const zOutput = document.getElementById('z-output');
+      const statusBadge = document.getElementById('status-badge');
+      const stepBreakdown = document.getElementById('step-breakdown');
+      const resultCard = document.getElementById('result-card');
+
+      if (isNaN(x) || isNaN(y)) {
+        zOutput.textContent = 'Error';
+        zOutput.className = 'text-4xl font-bold font-mono text-rose-400';
+        statusBadge.textContent = '⚠ Harap masukkan angka yang valid';
+        statusBadge.className = 'text-xs text-rose-400 pt-1 font-medium';
+        stepBreakdown.innerHTML = `<span class="text-rose-400">Input X atau Y belum berupa angka valid.</span>`;
+        return;
+      }
+
+      // Check Real Domain: x >= 0 and y >= 0
+      if (x < 0 || y < 0) {
+        zOutput.textContent = 'Irasional / Imajiner';
+        zOutput.className = 'text-2xl font-bold font-mono text-amber-400 py-2';
+        statusBadge.textContent = '⚠ Tidak Terdefinisi di Bilangan Real (R)';
+        statusBadge.className = 'text-xs text-amber-400 pt-1 font-medium';
+
+        let errDetails = [];
+        if (x < 0) errDetails.push(`√(${formatNumberID(x, 2)}) → Akar angka negatif tidak terdefinisi pada bilangan real.`);
+        if (y < 0) errDetails.push(`√(${formatNumberID(y, 2)}) → Akar angka negatif tidak terdefinisi pada bilangan real.`);
+
+        stepBreakdown.innerHTML = `
+          <div class="text-amber-400 space-y-1">
+            <p><strong>Peringatan Domain:</strong></p>
+            ${errDetails.map(d => `<p>• ${d}</p>`).join('')}
+          </div>
+        `;
+        return;
+      }
+
+      // Valid calculation
+      const sqrtX = Math.sqrt(x);
+      const sqrtY = Math.sqrt(y);
+      const z = sqrtX + sqrtY;
+
+      // Update KPI Display
+      zOutput.textContent = Number.isInteger(z) ? formatNumberID(z, 0) : formatNumberID(z, 3);
+      zOutput.className = 'text-4xl font-bold font-mono text-cyan-400';
+      statusBadge.textContent = '✓ Nilai Real Terdefinisi';
+      statusBadge.className = 'text-xs text-emerald-400 pt-1 font-medium';
+
+      // Check if perfect square for exact step visualization
+      const isSqrtExactX = Number.isInteger(sqrtX);
+      const isSqrtExactY = Number.isInteger(sqrtY);
+
+      const strX = isSqrtExactX ? formatNumberID(sqrtX, 0) : formatNumberID(sqrtX, 3);
+      const strY = isSqrtExactY ? formatNumberID(sqrtY, 0) : formatNumberID(sqrtY, 3);
+      const strZ = Number.isInteger(z) ? formatNumberID(z, 0) : formatNumberID(z, 3);
+
+      stepBreakdown.innerHTML = `
+        <div class="text-slate-300">f(${formatNumberID(x, 2)}, ${formatNumberID(y, 2)}) = √(${formatNumberID(x, 2)}) + √(${formatNumberID(y, 2)})</div>
+        <div class="text-cyan-400">= ${strX} + ${strY}</div>
+        <div class="text-emerald-400 font-bold border-t border-slate-800 pt-1 mt-1">= ${strZ}</div>
+      `;
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      calculate();
+    }
+
+    // Auto calculate initial values on load
+    window.onload = function() {
+      calculate();
+    };
+  </script>
+</body>
+</html>
