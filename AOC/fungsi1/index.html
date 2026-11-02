@@ -1,191 +1,264 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kalkulator Interaktif Fungsi Akar</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts & MathJax untuk Render Formula Matematika -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #0f172a;
-      color: #f8fafc;
-    }
-    .font-mono {
-      font-family: 'Fira Code', monospace;
-    }
-  </style>
-</head>
-<body class="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
-
-  <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-6 md:p-8 space-y-6">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Fungsi f(x, y) = 6x + 12y + 35</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@600;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
     
-    <!-- Header Title & Formula -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-      <div>
-        <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          Kalkulator Fungsi Akar
-        </h1>
-        <p class="text-slate-400 text-sm mt-1">
-          Evaluasi fungsi dua variabel $f(x,y)$
-        </p>
-      </div>
-      
-      <!-- Display Formula -->
-      <div class="bg-slate-800/80 px-4 py-2.5 rounded-2xl border border-slate-700/50 flex items-center justify-center self-start sm:self-auto">
-        <span class="text-lg font-medium text-cyan-300">
-          \( f(x,y) = \sqrt{x} + \sqrt{y} \)
-        </span>
-      </div>
-    </div>
+    <style>
+        body {
+            font-family: 'Noto Serif SC', 'Cinzel', serif;
+            background: radial-gradient(circle at center, #4a0305 0%, #200002 70%, #0d0001 100%);
+            min-height: 100vh;
+        }
 
-    <!-- 1. Interactive Inputs Deck (DI ATAS) -->
-    <form id="calc-form" onsubmit="handleSubmit(event)" class="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl space-y-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Input X Controls -->
-        <div class="space-y-2">
-          <label for="input-x" class="text-sm font-semibold text-cyan-400 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span> Nilai Variabel X
-          </label>
-          <input type="number" id="input-x" value="9" step="any" placeholder="Nilai X..." class="w-full bg-slate-900 border border-slate-700 text-cyan-300 font-mono text-base px-4 py-2.5 rounded-xl focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
+        /* Decorative Gold Frame & Patterns */
+        .royal-card {
+            background: radial-gradient(circle at center, #8a0c10 0%, #500406 60%, #300203 100%);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), inset 0 0 25px rgba(0, 0, 0, 0.6);
+            border: 4px solid #d4af37;
+            position: relative;
+        }
+
+        /* Outer Double Frame Effect */
+        .royal-card::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -12px;
+            border: 2px solid #b8860b;
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        /* Gold Gradient Elements */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fff7c2 0%, #ffd700 30%, #d4af37 70%, #aa7c11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #aa7c11 100%);
+        }
+
+        .gold-gradient-bg:hover {
+            background: linear-gradient(135deg, #fff099 0%, #e6c200 50%, #c49215 100%);
+        }
+
+        .gold-border {
+            border: 2px solid;
+            border-image: linear-gradient(to bottom right, #ffe066, #d4af37, #8a640f) 1;
+        }
+
+        /* Input Styling */
+        .custom-input {
+            background: rgba(30, 2, 3, 0.85);
+            border: 2px solid #b8860b;
+            color: #fff7c2;
+            transition: all 0.3s ease;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            background: rgba(45, 3, 5, 0.95);
+        }
+
+        /* SVG Corner Ornaments Position */
+        .corner-ornament {
+            position: absolute;
+            width: 42px;
+            height: 42px;
+            fill: #d4af37;
+            pointer-events: none;
+            filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.7));
+        }
+
+        .corner-tl { top: 6px; left: 6px; }
+        .corner-tr { top: 6px; right: 6px; transform: scaleX(-1); }
+        .corner-bl { bottom: 6px; left: 6px; transform: scaleY(-1); }
+        .corner-br { bottom: 6px; right: 6px; transform: scale(-1); }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 md:p-8">
+
+    <!-- Main Container -->
+    <div class="relative w-full max-w-xl p-6 md:p-10 rounded-lg royal-card text-amber-100">
+
+        <!-- Asian Traditional Corner Ornaments (SVG) -->
+        <svg class="corner-ornament corner-tl" viewBox="0 0 100 100">
+            <path d="M0,0 L100,0 L100,20 L20,20 L20,100 L0,100 Z" fill="#d4af37"/>
+            <path d="M25,25 L80,25 L80,40 L40,40 L40,80 L25,80 Z" fill="#ffd700"/>
+            <circle cx="50" cy="50" r="8" fill="#d4af37"/>
+        </svg>
+        <svg class="corner-ornament corner-tr" viewBox="0 0 100 100">
+            <path d="M0,0 L100,0 L100,20 L20,20 L20,100 L0,100 Z" fill="#d4af37"/>
+            <path d="M25,25 L80,25 L80,40 L40,40 L40,80 L25,80 Z" fill="#ffd700"/>
+            <circle cx="50" cy="50" r="8" fill="#d4af37"/>
+        </svg>
+        <svg class="corner-ornament corner-bl" viewBox="0 0 100 100">
+            <path d="M0,0 L100,0 L100,20 L20,20 L20,100 L0,100 Z" fill="#d4af37"/>
+            <path d="M25,25 L80,25 L80,40 L40,40 L40,80 L25,80 Z" fill="#ffd700"/>
+            <circle cx="50" cy="50" r="8" fill="#d4af37"/>
+        </svg>
+        <svg class="corner-ornament corner-br" viewBox="0 0 100 100">
+            <path d="M0,0 L100,0 L100,20 L20,20 L20,100 L0,100 Z" fill="#d4af37"/>
+            <path d="M25,25 L80,25 L80,40 L40,40 L40,80 L25,80 Z" fill="#ffd700"/>
+            <circle cx="50" cy="50" r="8" fill="#d4af37"/>
+        </svg>
+
+        <!-- Meander Border Decorative Header Pattern -->
+        <div class="w-full h-3 border-y border-amber-500/40 mb-6 flex justify-between items-center overflow-hidden opacity-60">
+            <div class="text-xs text-amber-300 tracking-[0.3em] whitespace-nowrap">
+                卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐
+            </div>
         </div>
 
-        <!-- Input Y Controls -->
-        <div class="space-y-2">
-          <label for="input-y" class="text-sm font-semibold text-blue-400 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span> Nilai Variabel Y
-          </label>
-          <input type="number" id="input-y" value="16" step="any" placeholder="Nilai Y..." class="w-full bg-slate-900 border border-slate-700 text-blue-300 font-mono text-base px-4 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+        <!-- Header Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold gold-gradient-text tracking-wide mb-2" style="font-family: 'Cinzel Decorative', 'Cinzel', serif;">
+                KALKULATOR FUNGSI
+            </h1>
+            <div class="inline-block px-4 py-1 rounded bg-black/40 border border-amber-500/50 shadow-inner">
+                <span class="text-lg md:text-xl font-semibold text-amber-300 font-mono">f(x, y) = 6x + 12y + 35</span>
+            </div>
         </div>
-      </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2 cursor-pointer">
-        Hitung Nilai
-      </button>
-    </form>
+        <!-- Input Form Section -->
+        <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Input X -->
+                <div class="flex flex-col">
+                    <label for="valX" class="mb-2 text-sm font-semibold tracking-wider text-amber-200 flex items-center gap-2">
+                        <span class="text-amber-400">❖</span> Nilai Variable X:
+                    </label>
+                    <input 
+                        type="number" 
+                        id="valX" 
+                        placeholder="Masukkan nilai x" 
+                        value="32" 
+                        class="custom-input p-3 rounded text-center text-xl font-bold font-mono shadow-inner"
+                        oninput="calculateResult()"
+                    >
+                </div>
 
-    <!-- 2. Result & Step Breakdown Panel (DI BAWAH) -->
-    <div class="space-y-4 bg-slate-800/40 border border-slate-800 p-5 rounded-2xl">
-      <!-- KPI Result Display -->
-      <div id="result-card" class="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 p-5 rounded-2xl text-center space-y-1">
-        <span class="text-xs uppercase text-slate-400 tracking-wider font-medium">Hasil / Jawaban Output ($z$)</span>
-        <div id="z-output" class="text-4xl font-bold font-mono text-cyan-400">7,000</div>
-        <div id="status-badge" class="text-xs text-emerald-400 pt-1 font-medium">✓ Nilai Real Terdefinisi</div>
-      </div>
+                <!-- Input Y -->
+                <div class="flex flex-col">
+                    <label for="valY" class="mb-2 text-sm font-semibold tracking-wider text-amber-200 flex items-center gap-2">
+                        <span class="text-amber-400">❖</span> Nilai Variable Y:
+                    </label>
+                    <input 
+                        type="number" 
+                        id="valY" 
+                        placeholder="Masukkan nilai y" 
+                        value="45" 
+                        class="custom-input p-3 rounded text-center text-xl font-bold font-mono shadow-inner"
+                        oninput="calculateResult()"
+                    >
+                </div>
+            </div>
 
-      <!-- Step Calculation Breakdown -->
-      <div class="space-y-2">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Rincian Langkah Perhitungan</span>
-        <div id="step-breakdown" class="bg-slate-950 border border-slate-800 p-4 rounded-xl font-mono text-sm text-slate-300 space-y-2 leading-relaxed">
-          <!-- Dynamically populated -->
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-3 pt-2">
+                <button 
+                    onclick="calculateResult()" 
+                    class="flex-1 min-w-[140px] py-3 px-6 gold-gradient-bg text-amber-950 font-bold text-lg rounded shadow-lg transform active:scale-95 transition-all duration-150 uppercase tracking-wider border border-amber-300 flex items-center justify-center gap-2"
+                >
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-4v-2h4v2zm0-4h-4v-2h4v2zm0-4h-4V7h4v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2z"/></svg>
+                    Hitung
+                </button>
+                <button 
+                    onclick="resetForm()" 
+                    class="py-3 px-5 bg-red-950 hover:bg-red-900 text-amber-300 font-semibold rounded border border-amber-600/50 transition-colors shadow flex items-center justify-center"
+                    title="Reset Form"
+                >
+                    Reset
+                </button>
+            </div>
+
+            <!-- Output & Calculation Details Section -->
+            <div class="mt-8 p-5 bg-black/50 rounded-lg border-2 border-amber-500/60 shadow-inner">
+                <div class="text-center">
+                    <span class="text-xs uppercase tracking-widest text-amber-400/90 font-semibold block mb-1">Hasil Perhitungan</span>
+                    <div id="resultOutput" class="text-4xl md:text-5xl font-extrabold gold-gradient-text font-mono my-2">
+                        767
+                    </div>
+                </div>
+
+                <!-- Step by step breakdown -->
+                <div class="mt-4 pt-3 border-t border-amber-500/30 text-center font-mono text-sm text-amber-200/90 space-y-1">
+                    <div id="step1" class="text-xs md:text-sm">f(32, 45) = 6(32) + 12(45) + 35</div>
+                    <div id="step2" class="text-xs md:text-sm text-amber-300/80">= 192 + 540 + 35</div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- Footer Accent Line -->
+        <div class="w-full h-3 border-y border-amber-500/40 mt-8 flex justify-between items-center overflow-hidden opacity-60">
+            <div class="text-xs text-amber-300 tracking-[0.3em] whitespace-nowrap">
+                卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐 卍 卐
+            </div>
+        </div>
     </div>
 
-    <!-- Catatan Matematika -->
-    <div class="text-xs text-slate-500 flex items-start gap-2 bg-slate-950/30 p-3 rounded-xl border border-slate-800/50">
-      <span class="text-slate-400 font-bold">ℹ</span>
-      <span>
-        Syarat domain $f(x,y) \in \mathbb{R}$: Nilai $x \ge 0$ dan $y \ge 0$.
-      </span>
-    </div>
+    <!-- Interactive JavaScript -->
+    <script>
+        function calculateResult() {
+            const xInput = document.getElementById('valX').value;
+            const yInput = document.getElementById('valY').value;
 
-  </div>
+            const resultOutput = document.getElementById('resultOutput');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
 
-  <script>
-    // Helper function to format numbers with comma as decimal separator
-    function formatNumberID(num, decimals = 3) {
-      if (isNaN(num)) return '-';
-      // Convert float dot separator to comma separator
-      let parts = num.toFixed(decimals).split('.');
-      if (decimals === 0) return parts[0];
-      return parts[0] + ',' + parts[1];
-    }
+            // Validation check
+            if (xInput === '' || yInput === '') {
+                resultOutput.innerText = '-';
+                step1.innerText = 'Masukkan nilai x dan y';
+                step2.innerText = '';
+                return;
+            }
 
-    function calculate() {
-      const xInput = document.getElementById('input-x').value;
-      const yInput = document.getElementById('input-y').value;
+            const x = parseFloat(xInput);
+            const y = parseFloat(yInput);
 
-      const x = parseFloat(xInput);
-      const y = parseFloat(yInput);
+            // Calculation
+            const termX = 6 * x;
+            const termY = 12 * y;
+            const result = termX + termY + 35;
 
-      const zOutput = document.getElementById('z-output');
-      const statusBadge = document.getElementById('status-badge');
-      const stepBreakdown = document.getElementById('step-breakdown');
-      const resultCard = document.getElementById('result-card');
+            // Format numbers for display
+            const formattedResult = Number.isInteger(result) ? result : result.toFixed(2);
+            const formattedTermX = Number.isInteger(termX) ? termX : termX.toFixed(2);
+            const formattedTermY = Number.isInteger(termY) ? termY : termY.toFixed(2);
 
-      if (isNaN(x) || isNaN(y)) {
-        zOutput.textContent = 'Error';
-        zOutput.className = 'text-4xl font-bold font-mono text-rose-400';
-        statusBadge.textContent = '⚠ Harap masukkan angka yang valid';
-        statusBadge.className = 'text-xs text-rose-400 pt-1 font-medium';
-        stepBreakdown.innerHTML = `<span class="text-rose-400">Input X atau Y belum berupa angka valid.</span>`;
-        return;
-      }
+            // Update UI Output
+            resultOutput.innerText = formattedResult;
+            step1.innerText = `f(${x}, ${y}) = 6(${x}) + 12(${y}) + 35`;
+            step2.innerText = `= ${formattedTermX} + ${formattedTermY} + 35`;
+        }
 
-      // Check Real Domain: x >= 0 and y >= 0
-      if (x < 0 || y < 0) {
-        zOutput.textContent = 'Irasional / Imajiner';
-        zOutput.className = 'text-2xl font-bold font-mono text-amber-400 py-2';
-        statusBadge.textContent = '⚠ Tidak Terdefinisi di Bilangan Real (R)';
-        statusBadge.className = 'text-xs text-amber-400 pt-1 font-medium';
+        function resetForm() {
+            document.getElementById('valX').value = '';
+            document.getElementById('valY').value = '';
+            calculateResult();
+        }
 
-        let errDetails = [];
-        if (x < 0) errDetails.push(`√(${formatNumberID(x, 2)}) → Akar angka negatif tidak terdefinisi pada bilangan real.`);
-        if (y < 0) errDetails.push(`√(${formatNumberID(y, 2)}) → Akar angka negatif tidak terdefinisi pada bilangan real.`);
-
-        stepBreakdown.innerHTML = `
-          <div class="text-amber-400 space-y-1">
-            <p><strong>Peringatan Domain:</strong></p>
-            ${errDetails.map(d => `<p>• ${d}</p>`).join('')}
-          </div>
-        `;
-        return;
-      }
-
-      // Valid calculation
-      const sqrtX = Math.sqrt(x);
-      const sqrtY = Math.sqrt(y);
-      const z = sqrtX + sqrtY;
-
-      // Update KPI Display
-      zOutput.textContent = Number.isInteger(z) ? formatNumberID(z, 0) : formatNumberID(z, 3);
-      zOutput.className = 'text-4xl font-bold font-mono text-cyan-400';
-      statusBadge.textContent = '✓ Nilai Real Terdefinisi';
-      statusBadge.className = 'text-xs text-emerald-400 pt-1 font-medium';
-
-      // Check if perfect square for exact step visualization
-      const isSqrtExactX = Number.isInteger(sqrtX);
-      const isSqrtExactY = Number.isInteger(sqrtY);
-
-      const strX = isSqrtExactX ? formatNumberID(sqrtX, 0) : formatNumberID(sqrtX, 3);
-      const strY = isSqrtExactY ? formatNumberID(sqrtY, 0) : formatNumberID(sqrtY, 3);
-      const strZ = Number.isInteger(z) ? formatNumberID(z, 0) : formatNumberID(z, 3);
-
-      stepBreakdown.innerHTML = `
-        <div class="text-slate-300">f(${formatNumberID(x, 2)}, ${formatNumberID(y, 2)}) = √(${formatNumberID(x, 2)}) + √(${formatNumberID(y, 2)})</div>
-        <div class="text-cyan-400">= ${strX} + ${strY}</div>
-        <div class="text-emerald-400 font-bold border-t border-slate-800 pt-1 mt-1">= ${strZ}</div>
-      `;
-    }
-
-    function handleSubmit(event) {
-      event.preventDefault();
-      calculate();
-    }
-
-    // Auto calculate initial values on load
-    window.onload = function() {
-      calculate();
-    };
-  </script>
+        // Initialize on page load
+        window.onload = function() {
+            calculateResult();
+        };
+    </script>
 </body>
 </html>
