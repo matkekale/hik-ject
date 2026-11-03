@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruangguru Academy of Champions Season 2 - Submit Jawaban</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            light: '#FCE788',
+                            DEFAULT: '#D4AF37',
+                            dark: '#A38020'
+                        },
+                        champion: {
+                            emerald: '#053E26',
+                            dark: '#032517',
+                            darkest: '#01150C'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Background & Styling Inspired by Image */
+        body {
+            background-color: #01150C;
+            background-image: 
+                radial-gradient(circle at 50% 30%, #085434 0%, #032819 60%, #01120a 100%);
+            min-height: 100vh;
+        }
+        .wood-pillars-border {
+            border-left: 18px solid #061e13;
+            border-right: 18px solid #061e13;
+            box-shadow: inset 10px 0 25px rgba(0,0,0,0.8), inset -10px 0 25px rgba(0,0,0,0.8);
+        }
+        @media (max-width: 640px) {
+            .wood-pillars-border {
+                border-left: 6px solid #061e13;
+                border-right: 6px solid #061e13;
+            }
+        }
+        /* Pattern Footer/Header Border */
+        .bottom-greek-border {
+            background: linear-gradient(90deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.3) 50%, rgba(212,175,55,0.1) 100%), #021a0f;
+            border-top: 2px solid #D4AF37;
+        }
+        /* Custom Gold Button Style */
+        .gold-button {
+            background: linear-gradient(180deg, #FCE788 0%, #D4AF37 50%, #A38020 100%);
+            color: #01150C;
+            text-shadow: 0px 1px 0px rgba(255,255,255,0.4);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+            transition: all 0.2s ease;
+        }
+        .gold-button:hover {
+            background: linear-gradient(180deg, #FFFFFF 0%, #FCE788 50%, #D4AF37 100%);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            transform: translateY(-1px);
+        }
+        .gold-button:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-100 wood-pillars-border flex flex-col justify-between">
+
+    <!-- Container Frame -->
+    <div class="max-w-6xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-grow flex flex-col justify-between">
+        
+        <!-- Header Branding (Ruangguru + Academy of Champions S2 Logo) -->
+        <header class="flex flex-row justify-between items-start mb-6 border-b border-gold/30 pb-4">
+            <!-- Left Branding -->
+            <div class="flex items-center space-x-2">
+                <div class="text-left">
+                    <span class="text-xs sm:text-sm tracking-tighter font-bold text-white uppercase block leading-none">ruang</span>
+                    <span class="text-xs sm:text-sm tracking-wider font-extrabold text-white uppercase underline decoration-gold underline-offset-2 block leading-tight">guru</span>
+                </div>
+            </div>
+
+            <!-- Right Branding -->
+            <div class="text-right">
+                <h1 class="font-cinzel text-xs sm:text-base md:text-xl font-bold tracking-widest text-gold-light uppercase leading-none drop-shadow">
+                    Academy <span class="text-xs font-sans text-slate-300">of</span> Champions
+                </h1>
+                <p class="font-cinzel text-[10px] sm:text-xs text-gold tracking-widest uppercase mt-0.5">SEASON 2</p>
+            </div>
+        </header>
+
+        <!-- Main Content Area: Switch Tabs between Form Submission & Spreadsheet -->
+        <main class="flex-grow flex flex-col justify-center">
+            
+            <!-- Navigation Tabs -->
+            <div class="flex justify-center mb-6">
+                <div class="bg-champion-darkest/80 p-1.5 rounded-xl border border-gold/30 backdrop-blur flex space-x-2 shadow-2xl">
+                    <button id="tab-form-btn" onclick="switchTab('form')" 
+                        class="px-5 py-2.5 rounded-lg font-semibold text-sm sm:text-base transition-all flex items-center space-x-2 bg-gold text-champion-darkest font-bold shadow-lg">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Form Submit Jawaban</span>
+                    </button>
+                    <button id="tab-sheet-btn" onclick="switchTab('sheet')" 
+                        class="px-5 py-2.5 rounded-lg font-semibold text-sm sm:text-base transition-all flex items-center space-x-2 text-emerald-200 hover:text-gold hover:bg-black/30">
+                        <i class="fa-solid fa-table"></i>
+                        <span>Spreadsheet Data</span>
+                        <span id="badge-count" class="bg-emerald-900 border border-gold/50 text-gold-light text-xs px-2 py-0.5 rounded-full ml-1">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 1: FORM SUBMIT JAWABAN -->
+            <section id="view-form" class="max-w-xl w-full mx-auto">
+                <div class="bg-champion-dark/95 border-2 border-gold/60 rounded-2xl p-5 sm:p-8 shadow-2xl backdrop-blur relative overflow-hidden">
+                    <!-- Decorative Corner Icons -->
+                    <i class="fa-solid fa-shield-halved absolute -right-6 -bottom-6 text-emerald-900/30 text-9xl pointer-events-none"></i>
+                    
+                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-center text-gold-light mb-2 tracking-wide">
+                        Submit Jawaban Peserta
+                    </h2>
+                    <p class="text-center text-xs sm:text-sm text-emerald-200/80 mb-6">
+                        Isikan data diri dan nilai jawaban dengan cermat.
+                    </p>
+
+                    <form id="submissionForm" onsubmit="handleSubmit(event)" class="space-y-4 relative z-10">
+                        <!-- Input 1: Nama Peserta -->
+                        <div class="space-y-1.5">
+                            <label for="nama" class="block text-xs sm:text-sm font-semibold uppercase tracking-wider text-gold-light">
+                                <i class="fa-solid fa-user-graduate mr-1.5"></i>Nama Peserta
+                            </label>
+                            <input type="text" id="nama" required placeholder="Masukkan nama lengkap..." 
+                                class="w-full bg-champion-darkest/90 border border-gold/40 rounded-lg px-4 py-3 text-white placeholder-emerald-700/60 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all text-sm sm:text-base">
+                        </div>
+
+                        <!-- Input 2: Periode (Periode 1 - 6) -->
+                        <div class="space-y-1.5">
+                            <label for="periode" class="block text-xs sm:text-sm font-semibold uppercase tracking-wider text-gold-light">
+                                <i class="fa-solid fa-calendar-days mr-1.5"></i>Periode / Babak
+                            </label>
+                            <select id="periode" required class="w-full bg-champion-darkest/90 border border-gold/40 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all text-sm sm:text-base cursor-pointer">
+                                <option value="" disabled selected>-- Pilih Periode --</option>
+                                <option value="Periode 1">Periode 1</option>
+                                <option value="Periode 2">Periode 2</option>
+                                <option value="Periode 3">Periode 3</option>
+                                <option value="Periode 4">Periode 4</option>
+                                <option value="Periode 5">Periode 5</option>
+                                <option value="Periode 6">Periode 6</option>
+                            </select>
+                        </div>
+
+                        <!-- Input 3: Jawaban Bilangan + On-Screen Keypad -->
+                        <div class="space-y-1.5">
+                            <label for="jawaban" class="block text-xs sm:text-sm font-semibold uppercase tracking-wider text-gold-light">
+                                <i class="fa-solid fa-calculator mr-1.5"></i>Nilai / Jawaban (Hanya Angka)
+                            </label>
+                            <input type="text" id="jawaban" required placeholder="0" 
+                                oninput="validateNumberInput(this)"
+                                class="w-full bg-champion-darkest/90 border border-gold/40 rounded-lg px-4 py-3 text-white text-right font-mono text-xl tracking-wider placeholder-emerald-700/60 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all">
+
+                            <!-- Interactive Numpad Keypad -->
+                            <div class="pt-2">
+                                <span class="block text-[11px] text-emerald-300/70 mb-1.5 font-medium">
+                                    <i class="fa-solid fa-keyboard mr-1"></i>Keypad Bilangan Interaktif:
+                                </span>
+                                <div class="grid grid-cols-4 gap-2 bg-champion-darkest/60 p-2.5 rounded-lg border border-gold/20">
+                                    <button type="button" onclick="appendKeypad('7')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">7</button>
+                                    <button type="button" onclick="appendKeypad('8')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">8</button>
+                                    <button type="button" onclick="appendKeypad('9')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">9</button>
+                                    <button type="button" onclick="backspaceKeypad()" class="py-2.5 bg-red-950/80 hover:bg-red-900 text-red-200 font-bold rounded border border-red-500/40 transition active:scale-95 text-sm flex items-center justify-center">
+                                        <i class="fa-solid fa-backspace"></i>
+                                    </button>
+
+                                    <button type="button" onclick="appendKeypad('4')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">4</button>
+                                    <button type="button" onclick="appendKeypad('5')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">5</button>
+                                    <button type="button" onclick="appendKeypad('6')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">6</button>
+                                    <button type="button" onclick="clearKeypad()" class="py-2.5 bg-amber-950/80 hover:bg-amber-900 text-amber-200 font-bold rounded border border-amber-500/40 transition active:scale-95 text-xs">C</button>
+
+                                    <button type="button" onclick="appendKeypad('1')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">1</button>
+                                    <button type="button" onclick="appendKeypad('2')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">2</button>
+                                    <button type="button" onclick="appendKeypad('3')" class="py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">3</button>
+                                    <button type="button" onclick="toggleNegative()" class="py-2.5 bg-gold/20 hover:bg-gold/40 text-gold-light font-bold rounded border border-gold/50 transition active:scale-95 text-sm">
+                                        - / +
+                                    </button>
+
+                                    <button type="button" onclick="appendKeypad('0')" class="col-span-2 py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">0</button>
+                                    <button type="button" onclick="appendKeypad('.')" class="col-span-2 py-2.5 bg-emerald-900/60 hover:bg-emerald-800 text-white font-bold rounded border border-gold/30 transition active:scale-95 text-base">.</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-3 flex space-x-3">
+                            <button type="button" onclick="resetForm()" class="px-4 py-3 bg-emerald-950 hover:bg-emerald-900 border border-gold/30 text-emerald-200 rounded-xl text-sm font-semibold transition flex-1">
+                                Reset Input
+                            </button>
+                            <button type="submit" class="gold-button py-3 px-6 rounded-xl font-bold uppercase tracking-wider text-sm flex-2 flex items-center justify-center space-x-2 flex-[2]">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Kirim Jawaban</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 2: SPREADSHEET DATA -->
+            <section id="view-sheet" class="w-full hidden">
+                <div class="bg-champion-dark/95 border-2 border-gold/60 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur mb-4">
+                    <!-- Spreadsheet Header Bar -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h2 class="font-cinzel text-lg sm:text-xl font-bold text-gold-light flex items-center space-x-2">
+                                <i class="fa-solid fa-file-excel text-emerald-400"></i>
+                                <span>Spreadsheet Live Submission</span>
+                            </h2>
+                            <p class="text-xs text-emerald-200/70">Terhubung langsung dengan form submission peserta.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- Search Box -->
+                            <div class="relative flex-1 sm:w-48">
+                                <input type="text" id="searchInput" oninput="renderTable()" placeholder="Cari nama/jawaban..." 
+                                    class="w-full bg-champion-darkest border border-gold/30 text-xs text-white rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:border-gold">
+                                <i class="fa-solid fa-search absolute left-2.5 top-2.5 text-emerald-500 text-xs"></i>
+                            </div>
+
+                            <!-- Filter Periode (Periode 1 - 6) -->
+                            <select id="filterPeriode" onchange="renderTable()" class="bg-champion-darkest border border-gold/30 text-xs text-white rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+                                <option value="ALL">Semua Periode</option>
+                                <option value="Periode 1">Periode 1</option>
+                                <option value="Periode 2">Periode 2</option>
+                                <option value="Periode 3">Periode 3</option>
+                                <option value="Periode 4">Periode 4</option>
+                                <option value="Periode 5">Periode 5</option>
+                                <option value="Periode 6">Periode 6</option>
+                            </select>
+
+                            <!-- Export CSV Button -->
+                            <button onclick="exportToCSV()" class="gold-button px-3.5 py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 shadow">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Ekspor CSV</span>
+                            </button>
+
+                            <!-- Clear All Data -->
+                            <button onclick="confirmClearAll()" class="px-3 py-2 bg-red-900/40 hover:bg-red-800/60 border border-red-500/40 text-red-200 rounded-lg text-xs font-medium transition" title="Hapus Semua Data">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table Simulation View -->
+                    <div class="bg-champion-darkest/90 border border-gold/30 rounded-xl overflow-hidden shadow-2xl">
+                        <div class="overflow-x-auto max-h-[500px]">
+                            <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                                <thead class="bg-black/60 text-gold-light sticky top-0 uppercase tracking-wider font-cinzel font-bold border-b border-gold/30 shadow-md">
+                                    <tr>
+                                        <th class="p-3.5 text-center w-12 border-r border-gold/10">No</th>
+                                        <th class="p-3.5 border-r border-gold/10 min-w-[140px]">Waktu Submit</th>
+                                        <th class="p-3.5 border-r border-gold/10 min-w-[160px]">Nama Peserta</th>
+                                        <th class="p-3.5 border-r border-gold/10 min-w-[140px]">Periode</th>
+                                        <th class="p-3.5 border-r border-gold/10 min-w-[160px]">Jawaban / Nilai</th>
+                                        <th class="p-3.5 text-center w-16">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="spreadsheetBody" class="divide-y divide-emerald-900/30 text-slate-200">
+                                    <!-- Dynamic rows insertion -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Table Footer Status -->
+                        <div class="p-3 bg-black/40 border-t border-gold/20 flex justify-between items-center text-xs text-emerald-400">
+                            <span id="table-summary">Menampilkan 0 data</span>
+                            <span class="flex items-center space-x-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>Spreadsheet Active</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed bottom-12 right-6 bg-gold text-champion-darkest px-5 py-3 rounded-lg shadow-2xl font-bold flex items-center space-x-3 transition-all duration-300 transform translate-y-20 opacity-0 z-50 border-2 border-white">
+            <i class="fa-solid fa-circle-check text-xl"></i>
+            <span id="toast-message">Jawaban berhasil disubmit!</span>
+        </div>
+
+        <!-- Custom Confirmation Dialog Box -->
+        <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-champion-dark border-2 border-gold rounded-xl max-w-md w-full p-6 space-y-4 text-center shadow-2xl">
+                <div class="w-14 h-14 bg-red-950 border border-red-500 rounded-full flex items-center justify-center mx-auto text-red-400 text-2xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="font-cinzel text-xl font-bold text-white">Konfirmasi Hapus</h3>
+                <p class="text-sm text-emerald-200/80">Apakah Anda yakin ingin menghapus seluruh data spreadsheet jawaban ini? Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="flex space-x-3 pt-2">
+                    <button onclick="closeModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-semibold">Batal</button>
+                    <button onclick="executeClearAll()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-semibold shadow">Ya, Hapus Semua</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Bottom Border Pattern -->
+        <footer class="bottom-greek-border py-2 px-4 text-center text-[10px] text-emerald-400/70 font-mono uppercase tracking-widest mt-6">
+            Ruangguru Academy of Champions Season 2 &bull; Official Answer Submission Platform
+        </footer>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const STORAGE_KEY = 'ruangguru_champion_submissions';
+
+        // Initial Sample Data
+        const initialSubmissions = [
+            {
+                id: '1',
+                timestamp: '2026-11-02 14:20:11',
+                nama: 'Budi Pratama',
+                periode: 'Periode 1',
+                jawaban: '150'
+            },
+            {
+                id: '2',
+                timestamp: '2026-11-03 09:15:40',
+                nama: 'Siti Aminah',
+                periode: 'Periode 2',
+                jawaban: '-42.5'
+            }
+        ];
+
+        let submissions = [];
+
+        // Load data from LocalStorage on initialization
+        window.onload = function() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    submissions = JSON.parse(stored);
+                } catch(e) {
+                    submissions = initialSubmissions;
+                }
+            } else {
+                submissions = initialSubmissions;
+            }
+            updateBadge();
+            renderTable();
+        };
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+            updateBadge();
+        }
+
+        // Input validation to strictly allow numeric input (including negative sign and decimal)
+        function validateNumberInput(input) {
+            let val = input.value;
+            val = val.replace(/[^0-9.-]/g, '');
+            if (val.indexOf('-') > 0) {
+                val = val.replace(/-/g, '');
+                val = '-' + val;
+            }
+            const parts = val.split('.');
+            if (parts.length > 2) {
+                val = parts[0] + '.' + parts.slice(1).join('');
+            }
+            input.value = val;
+        }
+
+        // Keypad Functions
+        function appendKeypad(char) {
+            const input = document.getElementById('jawaban');
+            if (char === '.' && input.value.includes('.')) return;
+            input.value += char;
+            validateNumberInput(input);
+        }
+
+        function toggleNegative() {
+            const input = document.getElementById('jawaban');
+            if (input.value.startsWith('-')) {
+                input.value = input.value.substring(1);
+            } else {
+                input.value = '-' + input.value;
+            }
+            validateNumberInput(input);
+        }
+
+        function backspaceKeypad() {
+            const input = document.getElementById('jawaban');
+            input.value = input.value.slice(0, -1);
+        }
+
+        function clearKeypad() {
+            document.getElementById('jawaban').value = '';
+        }
+
+        // Switch View Tabs
+        function switchTab(tab) {
+            const formView = document.getElementById('view-form');
+            const sheetView = document.getElementById('view-sheet');
+            const tabFormBtn = document.getElementById('tab-form-btn');
+            const tabSheetBtn = document.getElementById('tab-sheet-btn');
+
+            if (tab === 'form') {
+                formView.classList.remove('hidden');
+                sheetView.classList.add('hidden');
+                
+                tabFormBtn.className = "px-5 py-2.5 rounded-lg font-semibold text-sm sm:text-base transition-all flex items-center space-x-2 bg-gold text-champion-darkest font-bold shadow-lg";
+                tabSheetBtn.className = "px-5 py-2.5 rounded-lg font-semibold text-sm sm:text-base transition-all flex items-center space-x-2 text-emerald-200 hover:text-gold hover:bg-black/30 ml-2";
+            } else {
+                formView.classList.add('hidden');
+                sheetView.classList.remove('hidden');
+
+                tabSheetBtn.className = "px-5 py-2.5 rounded-lg font-semibold text-sm sm:text-base transition-all flex items-center space-x-2 bg-gold text-champion-darkest font-bold shadow-lg";
+                tabFormBtn.className = "px-5 py-2.5 rounded-lg font-semibold text-sm sm:text-base transition-all flex items-center space-x-2 text-emerald-200 hover:text-gold hover:bg-black/30";
+                
+                renderTable();
+            }
+        }
+
+        // Handle Form Submit
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            const namaInput = document.getElementById('nama');
+            const periodeInput = document.getElementById('periode');
+            const jawabanInput = document.getElementById('jawaban');
+
+            const now = new Date();
+            const formattedDate = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0') + ':' +
+                String(now.getSeconds()).padStart(2, '0');
+
+            const newEntry = {
+                id: Date.now().toString(),
+                timestamp: formattedDate,
+                nama: namaInput.value.trim(),
+                periode: periodeInput.value,
+                jawaban: jawabanInput.value.trim()
+            };
+
+            submissions.unshift(newEntry);
+            saveToStorage();
+
+            resetForm();
+
+            showToast('Jawaban berhasil disubmit ke Spreadsheet!');
+
+            setTimeout(() => {
+                switchTab('sheet');
+            }, 1000);
+        }
+
+        function resetForm() {
+            document.getElementById('submissionForm').reset();
+        }
+
+        // Render Data Table
+        function renderTable() {
+            const tbody = document.getElementById('spreadsheetBody');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const filterVal = document.getElementById('filterPeriode').value;
+
+            let filtered = submissions.filter(item => {
+                const matchesSearch = item.nama.toLowerCase().includes(searchVal) || 
+                                     item.jawaban.toLowerCase().includes(searchVal);
+                const matchesPeriode = filterVal === 'ALL' || item.periode === filterVal;
+                return matchesSearch && matchesPeriode;
+            });
+
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-12 text-emerald-400/60 italic">
+                            <i class="fa-solid fa-folder-open text-3xl mb-2 block text-emerald-600"></i>
+                            Belum ada data jawaban peserta yang cocok.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filtered.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-emerald-900/30 transition-colors";
+                    row.innerHTML = `
+                        <td class="p-3 text-center border-r border-emerald-900/30 text-emerald-400 font-mono">${index + 1}</td>
+                        <td class="p-3 border-r border-emerald-900/30 text-emerald-300 font-mono text-xs">${item.timestamp}</td>
+                        <td class="p-3 border-r border-emerald-900/30 font-semibold text-gold-light">${escapeHtml(item.nama)}</td>
+                        <td class="p-3 border-r border-emerald-900/30">
+                            <span class="px-2 py-1 bg-emerald-950 text-emerald-300 border border-emerald-700/50 rounded text-[11px] font-medium block w-fit">
+                                ${escapeHtml(item.periode)}
+                            </span>
+                        </td>
+                        <td class="p-3 border-r border-emerald-900/30 font-mono font-bold text-white">${escapeHtml(item.jawaban)}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteRow('${item.id}')" title="Hapus Data" class="text-red-400 hover:text-red-200 p-1.5 hover:bg-red-950/60 rounded transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            document.getElementById('table-summary').innerText = `Menampilkan ${filtered.length} dari ${submissions.length} total data`;
+        }
+
+        function deleteRow(id) {
+            submissions = submissions.filter(item => item.id !== id);
+            saveToStorage();
+            renderTable();
+            showToast('Satu data jawaban berhasil dihapus');
+        }
+
+        function updateBadge() {
+            document.getElementById('badge-count').innerText = submissions.length;
+        }
+
+        // Custom Dialog Modal Logic
+        function confirmClearAll() {
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+        }
+
+        function executeClearAll() {
+            submissions = [];
+            saveToStorage();
+            renderTable();
+            closeModal();
+            showToast('Seluruh data spreadsheet telah dibersihkan!');
+        }
+
+        // Export data to CSV File
+        function exportToCSV() {
+            if (submissions.length === 0) {
+                showToast('Tidak ada data untuk diekspor!');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No,Waktu Submit,Nama Peserta,Periode,Jawaban\n";
+
+            submissions.forEach((item, idx) => {
+                let cleanNama = `"${item.nama.replace(/"/g, '""')}"`;
+                let cleanPeriode = `"${item.periode.replace(/"/g, '""')}"`;
+                let cleanJawaban = `"${item.jawaban.replace(/"/g, '""')}"`;
+                
+                csvContent += `${idx + 1},${item.timestamp},${cleanNama},${cleanPeriode},${cleanJawaban}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Champion_Season2_Jawaban_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('File CSV berhasil diunduh!');
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            
+            toastMsg.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
