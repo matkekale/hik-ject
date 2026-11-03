@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Fungsi f(x,y)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Outfit:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #120304;
+            color: #f1e5d1;
+        }
+
+        .cinzel-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Red velvet texture background */
+        .royal-bg {
+            background: radial-gradient(circle at center, #5a090b 0%, #310305 60%, #150203 100%);
+        }
+
+        /* Gold metallic frame effect */
+        .gold-border-outer {
+            border: 12px solid #8c6a28;
+            border-image: linear-gradient(to bottom right, #e6c875, #99742e, #e6c875, #634b1a, #ffd875) 1;
+            box-shadow: inset 0 0 15px #000, 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .gold-border-inner {
+            border: 2px solid #dfb75c;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+        }
+
+        /* Input styling */
+        .gold-input {
+            background: rgba(20, 5, 5, 0.7);
+            border: 2px solid #b8903c;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .gold-input:focus {
+            outline: none;
+            border-color: #ffe699;
+            box-shadow: 0 0 12px rgba(223, 183, 92, 0.6);
+        }
+
+        /* Button style */
+        .gold-btn {
+            background: linear-gradient(135deg, #b8860b 0%, #e6c567 50%, #996b00 100%);
+            color: #2b0404;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        .gold-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 197, 103, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .gold-btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Container Utama Bingkai Emas -->
+    <div class="relative w-full max-w-2xl gold-border-outer p-4 sm:p-8 royal-bg rounded-lg my-6">
+        
+        <!-- Ornamen Sudut -->
+        <div class="absolute top-2 left-2 text-amber-400 opacity-60 text-xl pointer-events-none">✦</div>
+        <div class="absolute top-2 right-2 text-amber-400 opacity-60 text-xl pointer-events-none">✦</div>
+        <div class="absolute bottom-2 left-2 text-amber-400 opacity-60 text-xl pointer-events-none">✦</div>
+        <div class="absolute bottom-2 right-2 text-amber-400 opacity-60 text-xl pointer-events-none">✦</div>
+
+        <div class="gold-border-inner p-6 sm:p-8 rounded relative">
+
+            <!-- Judul -->
+            <div class="text-center mb-8">
+                <h1 class="cinzel-font text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 drop-shadow-md">
+                    KALKULATOR FUNGSI KEENAM
+                </h1>
+                <p class="mt-2 text-amber-300 font-semibold text-lg sm:text-xl tracking-wide">
+                    f(x, y) = 9x² + 16y² - 256
+                </p>
+                <div class="w-32 h-0.5 mx-auto mt-3 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+            </div>
+
+            <!-- Form Input -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                <!-- Input X -->
+                <div class="flex flex-col">
+                    <label for="valX" class="mb-2 text-amber-200 font-semibold text-sm tracking-wider uppercase flex items-center gap-1">
+                        <span>Nilai X :</span>
+                    </label>
+                    <input type="number" id="valX" value="4" step="any" oninput="calculateResult()" 
+                        class="gold-input px-4 py-3 rounded-md text-xl text-center font-bold" placeholder="Masukkan nilai x">
+                </div>
+
+                <!-- Input Y -->
+                <div class="flex flex-col">
+                    <label for="valY" class="mb-2 text-amber-200 font-semibold text-sm tracking-wider uppercase flex items-center gap-1">
+                        <span>Nilai Y :</span>
+                    </label>
+                    <input type="number" id="valY" value="3" step="any" oninput="calculateResult()" 
+                        class="gold-input px-4 py-3 rounded-md text-xl text-center font-bold" placeholder="Masukkan nilai y">
+                </div>
+            </div>
+
+            <!-- Display Hasil Output -->
+            <div class="bg-black/40 border border-amber-600/40 p-6 rounded-lg text-center mb-6 backdrop-blur-sm">
+                <div class="text-xs uppercase tracking-widest text-amber-400 mb-1 font-semibold">Hasil Perhitungan f(x,y)</div>
+                <div id="resultOutput" class="cinzel-font text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-lg my-2">
+                    32
+                </div>
+                
+                <!-- Geometric Position Insight -->
+                <div id="geoInsight" class="mt-2 text-xs sm:text-sm font-semibold text-amber-200">
+                    <!-- Posisi terhadap Elips -->
+                </div>
+
+                <!-- Rincian Perhitungan -->
+                <div class="mt-4 pt-4 border-t border-amber-900/60 text-xs sm:text-sm text-amber-100/80 space-y-1 font-mono">
+                    <div id="step1">f(4, 3) = 9(4)² + 16(3)² - 256</div>
+                    <div id="step2" class="text-amber-300">= 9(16) + 16(9) - 256 = 144 + 144 - 256</div>
+                    <div id="step3" class="text-amber-400">= 288 - 256 = 32</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-center">
+                <button onclick="resetForm()" class="gold-btn px-8 py-2.5 rounded-full text-sm">
+                    Reset Input
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Interactive JavaScript -->
+    <script>
+        function calculateResult() {
+            const xElem = document.getElementById('valX');
+            const yElem = document.getElementById('valY');
+            const resultOutput = document.getElementById('resultOutput');
+            const geoInsight = document.getElementById('geoInsight');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+
+            if (!xElem || !yElem || !resultOutput || !step1 || !step2 || !step3) return;
+
+            const xInput = xElem.value;
+            const yInput = yElem.value;
+
+            if (xInput === '' || yInput === '') {
+                resultOutput.innerText = '-';
+                if (geoInsight) geoInsight.innerText = '';
+                step1.innerText = 'Masukkan nilai x dan y';
+                step2.innerText = '';
+                step3.innerText = '';
+                return;
+            }
+
+            const x = parseFloat(xInput);
+            const y = parseFloat(yInput);
+
+            // Hitung f(x,y) = 9x^2 + 16y^2 - 256
+            const termX2 = 9 * Math.pow(x, 2);
+            const termY2 = 16 * Math.pow(y, 2);
+            const sumTerms = termX2 + termY2;
+            const result = sumTerms - 256;
+
+            // Format desimal menggunakan tanda koma (,)
+            const formatNum = (num) => {
+                const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
+                return formatted.replace('.', ',');
+            };
+
+            const xFormatted = xInput.replace('.', ',');
+            const yFormatted = yInput.replace('.', ',');
+
+            // Analisis Geometris (Elips 9x^2 + 16y^2 = 256)
+            let insightText = '';
+            if (Math.abs(result) < 0.0001) {
+                insightText = "✦ Titik (x,y) berada tepat pada garis Elips (f(x,y) = 0)";
+            } else if (result < 0) {
+                insightText = "✦ Titik (x,y) berada di dalam Elips (f(x,y) < 0)";
+            } else {
+                insightText = "✦ Titik (x,y) berada di luar Elips (f(x,y) > 0)";
+            }
+
+            // Update Tampilan Hasil
+            resultOutput.innerText = formatNum(result);
+            if (geoInsight) geoInsight.innerText = insightText;
+            step1.innerText = `f(${xFormatted}, ${yFormatted}) = 9(${xFormatted})² + 16(${yFormatted})² - 256`;
+            step2.innerText = `= 9(${formatNum(Math.pow(x, 2))}) + 16(${formatNum(Math.pow(y, 2))}) - 256 = ${formatNum(termX2)} + ${formatNum(termY2)} - 256`;
+            step3.innerText = `= ${formatNum(sumTerms)} - 256 = ${formatNum(result)}`;
+        }
+
+        function resetForm() {
+            const xElem = document.getElementById('valX');
+            const yElem = document.getElementById('valY');
+            if (xElem) xElem.value = '4';
+            if (yElem) yElem.value = '3';
+            calculateResult();
+        }
+
+        // Jalankan kalkulasi pertama kali
+        document.addEventListener('DOMContentLoaded', calculateResult);
+        window.onload = calculateResult;
+    </script>
+</body>
+</html>
