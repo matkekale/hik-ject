@@ -57,6 +57,16 @@
         </p>
     </div>
 
+    <!-- Level Selector -->
+    <div class="flex justify-center gap-3 mb-4 w-full max-w-4xl">
+        <button id="btnLevel1" class="px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md bg-amber-500 text-slate-950">
+            Soal 1
+        </button>
+        <button id="btnLevel2" class="px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md bg-slate-800 text-slate-300 hover:bg-slate-700">
+            Soal 2
+        </button>
+    </div>
+
     <!-- Stats Card -->
     <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 mb-5 w-full max-w-4xl border border-slate-800 flex justify-around items-center shadow-lg">
         <div class="text-center">
@@ -95,16 +105,16 @@
             </div>
         </div>
 
-        <!-- Frame 2: Blue (2x6) -->
+        <!-- Frame 2: Blue (2x6 or 2x7) -->
         <div class="flex flex-col items-center w-full max-w-xl">
             <div class="flex justify-between items-center w-full mb-2 px-1">
-                <span class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                <span id="titleFrame2" class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
                     <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block animate-pulse"></span> Frame 2 (2×6)
                 </span>
                 <span id="statusFrame2" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Belum Selesai</span>
             </div>
             <div class="bg-blue-950/40 p-3 md:p-4 rounded-3xl shadow-2xl border-2 border-blue-900/60 w-full">
-                <div id="board2" class="grid grid-cols-6 gap-2 bg-black/60 p-3 rounded-2xl select-none">
+                <div id="board2" class="grid gap-2 bg-black/60 p-3 rounded-2xl select-none">
                     <!-- Frame 2 Tiles -->
                 </div>
             </div>
@@ -140,14 +150,14 @@
             <div id="goalContainer" class="hidden mt-2 p-4 bg-slate-950 rounded-xl border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Goal Frame 1 -->
                 <div class="bg-red-950/30 p-3 rounded-lg border border-red-900/40">
-                    <span class="text-xs font-bold text-red-400 block mb-1">Target Frame 1 (2x4):</span>
+                    <span id="goalTitle1" class="text-xs font-bold text-red-400 block mb-1">Target Frame 1 (2x4):</span>
                     <div id="goalText1" class="text-sm font-bold text-amber-300 font-mono tracking-wider">
                         A = 2 6 / B = 4 [ ]
                     </div>
                 </div>
                 <!-- Goal Frame 2 -->
                 <div class="bg-blue-950/30 p-3 rounded-lg border border-blue-900/40">
-                    <span class="text-xs font-bold text-blue-400 block mb-1">Target Frame 2 (2x6):</span>
+                    <span id="goalTitle2" class="text-xs font-bold text-blue-400 block mb-1">Target Frame 2 (2x6):</span>
                     <div id="goalText2" class="text-sm font-bold text-amber-300 font-mono tracking-wider">
                         B 3 = 5 = 7 / + × A 9 8 [ ]
                     </div>
@@ -182,31 +192,73 @@
     </div>
 
     <script>
-        // CONFIGURATION FOR FRAME 1 (RED - 2x4)
-        const F1_ROWS = 2, F1_COLS = 4;
-        const F1_INITIAL = ['6', 'A', '4', 'B', '2', '=', '=', ''];
-        let F1_TARGET = ['A', '=', '2', '6', 'B', '=', '4', ''];
+        // LEVELS DATA
+        const LEVELS = {
+            1: {
+                f1: {
+                    rows: 2, cols: 4,
+                    initial: ['6', 'A', '4', 'B', '2', '=', '=', ''],
+                    target: ['A', '=', '2', '6', 'B', '=', '4', '']
+                },
+                f2: {
+                    rows: 2, cols: 6,
+                    initial: ['B', '3', '=', '5', '=', '7', '+', '×', 'A', '9', '8', ''],
+                    target: ['A', '×', '3', '=', '7', '8', 'B', '+', '5', '=', '9', '']
+                }
+            },
+            2: {
+                f1: {
+                    rows: 2, cols: 4,
+                    initial: ['', '1', '6', '=', 'A', 'B', '=', '8'],
+                    target: ['A', '=', '1', '6', 'B', '=', '8', '']
+                },
+                f2: {
+                    rows: 2, cols: 7,
+                    initial: ['B', 'A', '÷', '3', '+', '2', '=', '×', '2', '=', '', '1', '1', '7'],
+                    target: ['B', 'A', '÷', '3', '+', '2', '=', '1', '1', '7', '×', '2', '=', '']
+                }
+            }
+        };
 
-        // CONFIGURATION FOR FRAME 2 (BLUE - 2x6)
-        const F2_ROWS = 2, F2_COLS = 6;
-        // Initial state from earlier image:
-        // Row 1: B, 3, =, 5, =, 7
-        // Row 2: +, ×, A, 9, 8, [Empty]
-        const F2_INITIAL = ['B', '3', '=', '5', '=', '7', '+', '×', 'A', '9', '8', ''];
-        
-        // NEW TARGET STATE FROM LATEST IMAGE:
-        // Row 1: A, ×, 3, =, 7, 8
-        // Row 2: B, +, 5, =, 9, [Empty]
-        let F2_TARGET = ['A', '×', '3', '=', '7', '8', 'B', '+', '5', '=', '9', ''];
+        let currentLevel = 1;
+        let activeConfig = LEVELS[currentLevel];
 
         // GAME STATE
-        let board1State = [...F1_INITIAL];
-        let board2State = [...F2_INITIAL];
+        let board1State = [...activeConfig.f1.initial];
+        let board2State = [...activeConfig.f2.initial];
         let moves = 0;
         let timerSeconds = 0;
         let timerInterval = null;
         let gameStarted = false;
         let soundEnabled = true;
+
+        // DOM Elements
+        const board1El = document.getElementById('board1');
+        const board2El = document.getElementById('board2');
+        const titleFrame2 = document.getElementById('titleFrame2');
+        const moveCountEl = document.getElementById('moveCount');
+        const timerEl = document.getElementById('timer');
+        const statusFrame1 = document.getElementById('statusFrame1');
+        const statusFrame2 = document.getElementById('statusFrame2');
+        
+        const btnLevel1 = document.getElementById('btnLevel1');
+        const btnLevel2 = document.getElementById('btnLevel2');
+        const btnReset = document.getElementById('btnReset');
+        const btnShuffle = document.getElementById('btnShuffle');
+        const btnSound = document.getElementById('btnSound');
+        const soundOnIcon = document.getElementById('soundOnIcon');
+        const soundOffIcon = document.getElementById('soundOffIcon');
+        
+        const winModal = document.getElementById('winModal');
+        const winModalContent = document.getElementById('winModalContent');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        
+        const btnToggleGoal = document.getElementById('btnToggleGoal');
+        const goalContainer = document.getElementById('goalContainer');
+        const goalTitle1 = document.getElementById('goalTitle1');
+        const goalTitle2 = document.getElementById('goalTitle2');
+        const goalText1El = document.getElementById('goalText1');
+        const goalText2El = document.getElementById('goalText2');
 
         // Web Audio API
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -234,28 +286,20 @@
             } catch (e) {}
         }
 
-        // DOM Elements
-        const board1El = document.getElementById('board1');
-        const board2El = document.getElementById('board2');
-        const moveCountEl = document.getElementById('moveCount');
-        const timerEl = document.getElementById('timer');
-        const statusFrame1 = document.getElementById('statusFrame1');
-        const statusFrame2 = document.getElementById('statusFrame2');
-        
-        const btnReset = document.getElementById('btnReset');
-        const btnShuffle = document.getElementById('btnShuffle');
-        const btnSound = document.getElementById('btnSound');
-        const soundOnIcon = document.getElementById('soundOnIcon');
-        const soundOffIcon = document.getElementById('soundOffIcon');
-        
-        const winModal = document.getElementById('winModal');
-        const winModalContent = document.getElementById('winModalContent');
-        const btnCloseModal = document.getElementById('btnCloseModal');
-        
-        const btnToggleGoal = document.getElementById('btnToggleGoal');
-        const goalContainer = document.getElementById('goalContainer');
-        const goalText1El = document.getElementById('goalText1');
-        const goalText2El = document.getElementById('goalText2');
+        // Switch Level
+        function loadLevel(lvl) {
+            currentLevel = lvl;
+            activeConfig = LEVELS[currentLevel];
+            
+            btnLevel1.className = `px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md ${lvl === 1 ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
+            btnLevel2.className = `px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md ${lvl === 2 ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`;
+
+            titleFrame2.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block animate-pulse"></span> Frame 2 (2×${activeConfig.f2.cols})`;
+            board2El.className = `grid grid-cols-${activeConfig.f2.cols} gap-2 bg-black/60 p-3 rounded-2xl select-none`;
+
+            resetGame();
+            updateGoalDisplay();
+        }
 
         // Render Frame 1
         function renderBoard1() {
@@ -284,7 +328,8 @@
                 const tileNode = document.createElement('div');
                 const isBlank = val === '';
                 
-                tileNode.className = `aspect-square flex items-center justify-center rounded-xl text-2xl md:text-4xl font-black cursor-pointer transition-all duration-150 select-none ${
+                const textSize = activeConfig.f2.cols === 7 ? 'text-xl md:text-3xl' : 'text-2xl md:text-4xl';
+                tileNode.className = `aspect-square flex items-center justify-center rounded-xl ${textSize} font-black cursor-pointer transition-all duration-150 select-none ${
                     isBlank ? 'empty-slot' : 'tile-blue text-white'
                 }`;
                 
@@ -314,8 +359,8 @@
         // Click Handler for Tiles
         function handleTileClick(boardNum, idx) {
             const state = boardNum === 1 ? board1State : board2State;
-            const rows = boardNum === 1 ? F1_ROWS : F2_ROWS;
-            const cols = boardNum === 1 ? F1_COLS : F2_COLS;
+            const rows = boardNum === 1 ? activeConfig.f1.rows : activeConfig.f2.rows;
+            const cols = boardNum === 1 ? activeConfig.f1.cols : activeConfig.f2.cols;
 
             const emptyIdx = state.indexOf('');
             const adjacent = getAdjacentIndices(idx, rows, cols);
@@ -385,8 +430,8 @@
             moves = 0;
             moveCountEl.innerText = moves;
 
-            board1State = shuffleSingleBoard(F1_INITIAL, F1_ROWS, F1_COLS);
-            board2State = shuffleSingleBoard(F2_INITIAL, F2_ROWS, F2_COLS);
+            board1State = shuffleSingleBoard(activeConfig.f1.initial, activeConfig.f1.rows, activeConfig.f1.cols);
+            board2State = shuffleSingleBoard(activeConfig.f2.initial, activeConfig.f2.rows, activeConfig.f2.cols);
 
             renderBoard1();
             renderBoard2();
@@ -400,8 +445,8 @@
             moves = 0;
             moveCountEl.innerText = moves;
 
-            board1State = [...F1_INITIAL];
-            board2State = [...F2_INITIAL];
+            board1State = [...activeConfig.f1.initial];
+            board2State = [...activeConfig.f2.initial];
 
             renderBoard1();
             renderBoard2();
@@ -411,8 +456,8 @@
 
         // Check completion status for both frames
         function checkStatus() {
-            const f1Solved = board1State.every((val, i) => val === F1_TARGET[i]);
-            const f2Solved = board2State.every((val, i) => val === F2_TARGET[i]);
+            const f1Solved = board1State.every((val, i) => val === activeConfig.f1.target[i]);
+            const f2Solved = board2State.every((val, i) => val === activeConfig.f2.target[i]);
 
             statusFrame1.innerText = f1Solved ? 'Selesai ✓' : 'Belum Selesai';
             statusFrame1.className = `text-xs px-2.5 py-0.5 rounded-full font-bold ${
@@ -443,16 +488,24 @@
 
         // Format Goal Display
         function updateGoalDisplay() {
-            const f1r1 = F1_TARGET.slice(0, 4).map(v => v || '[ ]').join(' ');
-            const f1r2 = F1_TARGET.slice(4, 8).map(v => v || '[ ]').join(' ');
+            goalTitle1.innerText = `Target Frame 1 (2x${activeConfig.f1.cols}):`;
+            goalTitle2.innerText = `Target Frame 2 (2x${activeConfig.f2.cols}):`;
+
+            const f1c = activeConfig.f1.cols;
+            const f1r1 = activeConfig.f1.target.slice(0, f1c).map(v => v || '[ ]').join(' ');
+            const f1r2 = activeConfig.f1.target.slice(f1c, f1c * 2).map(v => v || '[ ]').join(' ');
             goalText1El.innerText = `${f1r1} / ${f1r2}`;
 
-            const f2r1 = F2_TARGET.slice(0, 6).map(v => v || '[ ]').join(' ');
-            const f2r2 = F2_TARGET.slice(6, 12).map(v => v || '[ ]').join(' ');
+            const f2c = activeConfig.f2.cols;
+            const f2r1 = activeConfig.f2.target.slice(0, f2c).map(v => v || '[ ]').join(' ');
+            const f2r2 = activeConfig.f2.target.slice(f2c, f2c * 2).map(v => v || '[ ]').join(' ');
             goalText2El.innerText = `${f2r1} / ${f2r2}`;
         }
 
         // Event Listeners
+        btnLevel1.addEventListener('click', () => loadLevel(1));
+        btnLevel2.addEventListener('click', () => loadLevel(2));
+
         btnReset.addEventListener('click', resetGame);
         btnShuffle.addEventListener('click', shuffleAll);
 
@@ -489,10 +542,7 @@
         });
 
         // Initialize
-        updateGoalDisplay();
-        renderBoard1();
-        renderBoard2();
-        checkStatus();
+        loadLevel(1);
     </script>
 </body>
 </html>
