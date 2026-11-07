@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Multi-Fungsi Interaktif</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax CDN untuk render Notasi Math/LaTeX -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Outfit:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0d0203;
+            color: #f1e5d1;
+        }
+
+        .cinzel-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Red velvet gradient */
+        .royal-bg {
+            background: radial-gradient(circle at center, #52090b 0%, #2b0304 65%, #110102 100%);
+        }
+
+        /* Gold metallic frame */
+        .gold-border-outer {
+            border: 10px solid #8c6a28;
+            border-image: linear-gradient(to bottom right, #ffe699, #99742e, #e6c875, #5e4618, #ffd875) 1;
+            box-shadow: inset 0 0 20px #000, 0 12px 35px rgba(0, 0, 0, 0.9);
+        }
+
+        .gold-border-inner {
+            border: 2px solid #dfb75c;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Gold inputs */
+        .gold-input {
+            background: rgba(18, 4, 4, 0.85);
+            border: 2px solid #b8903c;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .gold-input:focus {
+            outline: none;
+            border-color: #ffe699;
+            box-shadow: 0 0 14px rgba(223, 183, 92, 0.7);
+        }
+
+        /* Buttons & Tabs */
+        .tab-btn {
+            background: rgba(40, 8, 9, 0.8);
+            border: 1px solid #a67c2e;
+            color: #d1b87a;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(100, 20, 22, 0.9);
+            color: #fff;
+            border-color: #ffd875;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #b8860b 0%, #e6c567 50%, #996b00 100%);
+            color: #2b0404;
+            font-weight: 700;
+            border-color: #fff;
+            box-shadow: 0 0 12px rgba(230, 197, 103, 0.5);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a0405;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8c6a28;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6">
+
+    <div class="relative w-full max-w-4xl gold-border-outer p-3 sm:p-6 royal-bg rounded-lg my-4">
+        
+        <!-- Ornamen Sudut -->
+        <div class="absolute top-2 left-2 text-amber-400 opacity-60 text-lg pointer-events-none select-none">✦</div>
+        <div class="absolute top-2 right-2 text-amber-400 opacity-60 text-lg pointer-events-none select-none">✦</div>
+        <div class="absolute bottom-2 left-2 text-amber-400 opacity-60 text-lg pointer-events-none select-none">✦</div>
+        <div class="absolute bottom-2 right-2 text-amber-400 opacity-60 text-lg pointer-events-none select-none">✦</div>
+
+        <div class="gold-border-inner p-4 sm:p-6 rounded">
+
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <h1 class="cinzel-font text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 drop-shadow">
+                    NILAI FUNGSI
+                </h1>
+                <p class="text-xs sm:text-sm text-amber-300/80 mt-1 uppercase tracking-widest font-semibold">
+                    Analisis & Perhitungan Matematika Interaktif
+                </p>
+                <div class="w-36 h-0.5 mx-auto mt-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+            </div>
+
+            <!-- Tab Selector Soal -->
+            <div class="flex overflow-x-auto gap-2 pb-3 mb-6">
+                <button onclick="switchTab(1)" id="tab-1" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap active">Soal 1</button>
+                <button onclick="switchTab(2)" id="tab-2" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 2</button>
+                <button onclick="switchTab(3)" id="tab-3" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 3</button>
+                <button onclick="switchTab(4)" id="tab-4" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 4</button>
+                <button onclick="switchTab(5)" id="tab-5" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 5</button>
+                <button onclick="switchTab(6)" id="tab-6" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 6</button>
+                <button onclick="switchTab(7)" id="tab-7" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap border-yellow-400/80">✨ Mode Custom</button>
+            </div>
+
+            <!-- Card Info Fungsi Aktif -->
+            <div class="bg-black/50 border border-amber-600/40 p-4 rounded-xl mb-6 text-center">
+                <span id="funcTitle" class="text-xs uppercase tracking-widest text-amber-400 font-bold block mb-1">Fungsi Soal 1</span>
+                <div id="funcFormula" class="cinzel-font text-lg sm:text-2xl font-bold text-yellow-300 tracking-wide flex justify-center items-center overflow-x-auto py-1">
+                    $$f(x, y) = 6x + 12y + 35$$
+                </div>
+            </div>
+
+            <!-- Form Input -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <!-- Input X -->
+                <div class="flex flex-col">
+                    <label id="labelX" for="valX" class="mb-1 text-amber-200 font-semibold text-xs sm:text-sm uppercase tracking-wider">
+                        Nilai $x$ :
+                    </label>
+                    <input type="number" id="valX" value="2" step="any" oninput="calculate()" 
+                        class="gold-input px-4 py-2.5 rounded-lg text-lg text-center font-bold" placeholder="Masukkan nilai x">
+                </div>
+
+                <!-- Input Y -->
+                <div class="flex flex-col">
+                    <label id="labelY" for="valY" class="mb-1 text-amber-200 font-semibold text-xs sm:text-sm uppercase tracking-wider">
+                        Nilai $y$ :
+                    </label>
+                    <input type="number" id="valY" value="3" step="any" oninput="calculate()" 
+                        class="gold-input px-4 py-2.5 rounded-lg text-lg text-center font-bold" placeholder="Masukkan nilai y">
+                </div>
+            </div>
+
+            <!-- Input Tambahan Khusus (Variabel C atau Rumus Custom) -->
+            <div id="extraInputs" class="mb-6 space-y-4 hidden">
+                <!-- Variabel C untuk Soal 2 -->
+                <div id="containerVarC" class="flex flex-col max-w-xs mx-auto hidden">
+                    <label for="valC" class="mb-1 text-amber-300 font-semibold text-xs text-center uppercase tracking-wider">Konstanta $C$ (Khusus Soal 2) :</label>
+                    <input type="number" id="valC" value="4" step="any" oninput="calculate()" 
+                        class="gold-input px-4 py-2 rounded-lg text-center font-bold text-amber-200" placeholder="Nilai C">
+                </div>
+
+                <!-- Custom Equation Input untuk Soal 7 -->
+                <div id="containerCustomEquation" class="flex flex-col hidden">
+                    <label for="customFormula" class="mb-1 text-amber-300 font-semibold text-xs uppercase tracking-wider">
+                        Ketik Rumus Fungsi Sendiri (Gunakan variabel $x$ dan $y$):
+                    </label>
+                    <input type="text" id="customFormula" value="2*x^2 + 3*y - 5" oninput="calculate()" 
+                        class="gold-input px-4 py-2.5 rounded-lg text-sm sm:text-base font-mono text-yellow-200" 
+                        placeholder="Contoh: 3*x^2 + sqrt(y) - 10 atau |x - y| + 4*x">
+                    <p class="text-[11px] text-amber-400/80 mt-1 italic">
+                        * Operator didukung: $+$, $-$, $*$, $/$, $\text{^}$ (pangkat), $\text{sqrt}(...)$ (akar), $\text{abs}(...)$ atau $|...|$ (mutlak).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Display Hasil -->
+            <div class="bg-black/60 border border-amber-500/50 p-5 rounded-xl text-center backdrop-blur-md">
+                <div class="text-xs uppercase tracking-widest text-amber-400 font-bold">Hasil Akhir $f(x, y)$</div>
+                <div id="resultOutput" class="cinzel-font text-3xl sm:text-5xl font-black text-yellow-300 my-2 drop-shadow-md">
+                    83
+                </div>
+
+                <!-- Steps Breakdown -->
+                <div class="mt-4 pt-4 border-t border-amber-900/60 text-left">
+                    <div class="text-xs uppercase tracking-wider text-amber-400 font-semibold mb-2 text-center">Penjelasan Langkah Perhitungan</div>
+                    <div id="stepsContainer" class="space-y-1.5 font-mono text-xs sm:text-sm text-amber-100/90 bg-red-950/40 p-3.5 rounded-lg border border-amber-900/40">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        let currentTab = 1;
+
+        const functionsData = {
+            1: {
+                title: "Fungsi Soal 1",
+                latexFormula: "f(x, y) = 6x + 12y + 35",
+                hasC: false
+            },
+            2: {
+                title: "Fungsi Soal 2",
+                latexFormula: "f(x, y) = 3x^2 + 15x + 2Cxy",
+                hasC: true
+            },
+            3: {
+                title: "Fungsi Soal 3",
+                latexFormula: "f(x, y) = 6xy - 10x^2y - 7xy^2",
+                hasC: false
+            },
+            4: {
+                title: "Fungsi Soal 4",
+                latexFormula: "f(x, y) = (x - y)^2 + (y - x)^2 - 3x^2y",
+                hasC: false
+            },
+            5: {
+                title: "Fungsi Soal 5",
+                latexFormula: "f(x, y) = x\\sqrt{16y} + 14y\\sqrt{x} + 12\\sqrt{x + y}",
+                hasC: false
+            },
+            6: {
+                title: "Fungsi Soal 6",
+                latexFormula: "f(x, y) = |3y - 2x^2| - 5xy",
+                hasC: false
+            },
+            7: {
+                title: "Mode Custom (Buat Fungsi Sendiri)",
+                latexFormula: "\\text{[Disesuaikan Input]}",
+                hasC: false
+            }
+        };
+
+        function triggerMathJax() {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        function switchTab(tabNum) {
+            currentTab = tabNum;
+            for (let i = 1; i <= 7; i++) {
+                const btn = document.getElementById(`tab-${i}`);
+                if (btn) {
+                    if (i === tabNum) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
+            }
+
+            const data = functionsData[tabNum];
+            document.getElementById('funcTitle').innerText = data.title;
+            document.getElementById('funcFormula').innerHTML = `$$${data.latexFormula}$$`;
+
+            // Update label input X dan Y dengan notasi LaTeX
+            document.getElementById('labelX').innerHTML = 'Nilai $x$ :';
+            document.getElementById('labelY').innerHTML = 'Nilai $y$ :';
+
+            // Handle extra inputs
+            const extraContainer = document.getElementById('extraInputs');
+            const containerC = document.getElementById('containerVarC');
+            const containerCustom = document.getElementById('containerCustomEquation');
+
+            if (tabNum === 2) {
+                extraContainer.classList.remove('hidden');
+                containerC.classList.remove('hidden');
+                containerCustom.classList.add('hidden');
+            } else if (tabNum === 7) {
+                extraContainer.classList.remove('hidden');
+                containerC.classList.add('hidden');
+                containerCustom.classList.remove('hidden');
+            } else {
+                extraContainer.classList.add('hidden');
+                containerC.classList.add('hidden');
+                containerCustom.classList.add('hidden');
+            }
+
+            calculate();
+        }
+
+        function formatNum(num) {
+            if (isNaN(num)) return "0";
+            if (!isFinite(num)) return "\\infty";
+            const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
+            return formatted.replace('.', ',');
+        }
+
+        function evaluateCustomFormula(expr, x, y) {
+            let sanitized = expr.toLowerCase();
+            
+            // Replace absolute bars |expression| with abs(expression)
+            sanitized = sanitized.replace(/\|([^|]+)\|/g, 'abs($1)');
+            
+            // Replace math functions with Math JS equivalents
+            sanitized = sanitized.replace(/\bsqrt\b/g, 'Math.sqrt');
+            sanitized = sanitized.replace(/\babs\b/g, 'Math.abs');
+            sanitized = sanitized.replace(/\bsin\b/g, 'Math.sin');
+            sanitized = sanitized.replace(/\bcos\b/g, 'Math.cos');
+            sanitized = sanitized.replace(/\btan\b/g, 'Math.tan');
+            sanitized = sanitized.replace(/\bpow\b/g, 'Math.pow');
+            
+            // Convert ^ exponent to Math.pow pattern
+            sanitized = sanitized.replace(/([a-zA-Z0-9_\).]+)\s*\^\s*([a-zA-Z0-9_\).]+)/g, 'Math.pow($1, $2)');
+
+            // Implicit multiplication support (e.g. 2x -> 2*x, xy -> x*y)
+            sanitized = sanitized.replace(/(\d+)\s*([x-yX-Y])/g, '$1*$2');
+            sanitized = sanitized.replace(/\b(x)\s*(y)\b/g, '$1*$2');
+
+            // Replace variables x and y
+            const safeEval = new Function('x', 'y', `return (${sanitized});`);
+            const val = safeEval(x, y);
+
+            return { value: val };
+        }
+
+        function calculate() {
+            const xVal = parseFloat(document.getElementById('valX').value);
+            const yVal = parseFloat(document.getElementById('valY').value);
+            const cVal = parseFloat(document.getElementById('valC').value) || 0;
+            const resElem = document.getElementById('resultOutput');
+            const stepsElem = document.getElementById('stepsContainer');
+
+            if (isNaN(xVal) || isNaN(yVal)) {
+                resElem.innerText = "-";
+                stepsElem.innerHTML = `<div class="text-amber-400 italic text-center">Silakan masukkan nilai $x$ dan $y$ yang valid.</div>`;
+                triggerMathJax();
+                return;
+            }
+
+            const fx = formatNum(xVal);
+            const fy = formatNum(yVal);
+            const fc = formatNum(cVal);
+
+            let result = 0;
+            let stepsHtml = '';
+
+            try {
+                switch (currentTab) {
+                    case 1:
+                        // f(x,y) = 6x + 12y + 35
+                        const term1_1 = 6 * xVal;
+                        const term1_2 = 12 * yVal;
+                        result = term1_1 + term1_2 + 35;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = 6(${fx}) + 12(${fy}) + 35$</div>
+                            <div>• Suku $6x = 6 \\times ${fx} = $ <strong>$${formatNum(term1_1)}$</strong></div>
+                            <div>• Suku $12y = 12 \\times ${fy} = $ <strong>$${formatNum(term1_2)}$</strong></div>
+                            <div>• Suku Konstanta = <strong>$35$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term1_1)} + ${formatNum(term1_2)} + 35 = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 2:
+                        // f(x,y) = 3x^2 + 15x + 2Cxy
+                        const term2_1 = 3 * Math.pow(xVal, 2);
+                        const term2_2 = 15 * xVal;
+                        const term2_3 = 2 * cVal * xVal * yVal;
+                        result = term2_1 + term2_2 + term2_3;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi ($C = ${fc}$):</strong> $f(${fx}, ${fy}) = 3(${fx})^2 + 15(${fx}) + 2(${fc})(${fx})(${fy})$</div>
+                            <div>• Suku $3x^2 = 3 \\times (${fx})^2 = $ <strong>$${formatNum(term2_1)}$</strong></div>
+                            <div>• Suku $15x = 15 \\times ${fx} = $ <strong>$${formatNum(term2_2)}$</strong></div>
+                            <div>• Suku $2Cxy = 2 \\times ${fc} \\times ${fx} \\times ${fy} = $ <strong>$${formatNum(term2_3)}$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term2_1)} + ${formatNum(term2_2)} + ${formatNum(term2_3)} = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 3:
+                        // f(x,y) = 6xy - 10x^2y - 7xy^2
+                        const term3_1 = 6 * xVal * yVal;
+                        const term3_2 = 10 * Math.pow(xVal, 2) * yVal;
+                        const term3_3 = 7 * xVal * Math.pow(yVal, 2);
+                        result = term3_1 - term3_2 - term3_3;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = 6(${fx})(${fy}) - 10(${fx})^2(${fy}) - 7(${fx})(${fy})^2$</div>
+                            <div>• Suku $6xy = 6 \\times ${fx} \\times ${fy} = $ <strong>$${formatNum(term3_1)}$</strong></div>
+                            <div>• Suku $10x^2y = 10 \\times (${fx})^2 \\times ${fy} = $ <strong>$${formatNum(term3_2)}$</strong></div>
+                            <div>• Suku $7xy^2 = 7 \\times ${fx} \\times (${fy})^2 = $ <strong>$${formatNum(term3_3)}$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term3_1)} - ${formatNum(term3_2)} - ${formatNum(term3_3)} = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 4:
+                        // f(x,y) = (x-y)^2 + (y-x)^2 - 3x^2y
+                        const diff1 = xVal - yVal;
+                        const sq1 = Math.pow(diff1, 2);
+                        const diff2 = yVal - xVal;
+                        const sq2 = Math.pow(diff2, 2);
+                        const term4_3 = 3 * Math.pow(xVal, 2) * yVal;
+                        result = sq1 + sq2 - term4_3;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = (${fx} - ${fy})^2 + (${fy} - ${fx})^2 - 3(${fx})^2(${fy})$</div>
+                            <div>• $(x - y)^2 = (${formatNum(diff1)})^2 = $ <strong>$${formatNum(sq1)}$</strong></div>
+                            <div>• $(y - x)^2 = (${formatNum(diff2)})^2 = $ <strong>$${formatNum(sq2)}$</strong></div>
+                            <div>• Suku $3x^2y = 3 \\times (${fx})^2 \\times ${fy} = $ <strong>$${formatNum(term4_3)}$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(sq1)} + ${formatNum(sq2)} - ${formatNum(term4_3)} = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 5:
+                        // f(x,y) = x√(16y) + 14y√x + 12√(x+y)
+                        if (yVal < 0 || xVal < 0 || (xVal + yVal) < 0) {
+                            resElem.innerText = "Tak Terdefinisi";
+                            stepsHtml = `<div class="text-red-400">⚠️ Domain Imajiner: Nilai di dalam akar kuadrat ($\\sqrt{\\dots}$) tidak boleh negatif ($x \\ge 0, y \\ge 0, x+y \\ge 0$).</div>`;
+                            triggerMathJax();
+                            return;
+                        }
+
+                        const sqrt16y = Math.sqrt(16 * yVal);
+                        const term5_1 = xVal * sqrt16y;
+                        const sqrtX = Math.sqrt(xVal);
+                        const term5_2 = 14 * yVal * sqrtX;
+                        const sqrtSum = Math.sqrt(xVal + yVal);
+                        const term5_3 = 12 * sqrtSum;
+                        result = term5_1 + term5_2 + term5_3;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = ${fx}\\sqrt{16 \\times ${fy}} + 14(${fy})\\sqrt{${fx}} + 12\\sqrt{${fx} + ${fy}}$</div>
+                            <div>• Suku $x\\sqrt{16y} = ${fx} \\times \\sqrt{${formatNum(16*yVal)}} = $ <strong>$${formatNum(term5_1)}$</strong></div>
+                            <div>• Suku $14y\\sqrt{x} = 14(${fy}) \\times \\sqrt{${fx}} = $ <strong>$${formatNum(term5_2)}$</strong></div>
+                            <div>• Suku $12\\sqrt{x+y} = 12 \\times \\sqrt{${formatNum(xVal+yVal)}} = $ <strong>$${formatNum(term5_3)}$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term5_1)} + ${formatNum(term5_2)} + ${formatNum(term5_3)} = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 6:
+                        // f(x,y) = |3y - 2x^2| - 5xy
+                        const insideAbs = 3 * yVal - 2 * Math.pow(xVal, 2);
+                        const absVal = Math.abs(insideAbs);
+                        const term6_2 = 5 * xVal * yVal;
+                        result = absVal - term6_2;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = |3(${fy}) - 2(${fx})^2| - 5(${fx})(${fy})$</div>
+                            <div>• Di dalam mutlak $(3y - 2x^2) = 3(${fy}) - 2(${formatNum(Math.pow(xVal,2))}) = ${formatNum(insideAbs)}$</div>
+                            <div>• Nilai Mutlak $|${formatNum(insideAbs)}| = $ <strong>$${formatNum(absVal)}$</strong></div>
+                            <div>• Suku $5xy = 5 \\times ${fx} \\times ${fy} = $ <strong>$${formatNum(term6_2)}$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(absVal)} - ${formatNum(term6_2)} = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 7:
+                        // Mode Custom Formula Parser
+                        const formulaInput = document.getElementById('customFormula').value.trim();
+                        document.getElementById('funcFormula').innerHTML = `$$f(x, y) = ${formulaInput || '...'}$$`;
+
+                        if (!formulaInput) {
+                            resElem.innerText = "-";
+                            stepsElem.innerHTML = `<div class="text-amber-400 italic">Silakan masukkan rumus fungsi custom.</div>`;
+                            triggerMathJax();
+                            return;
+                        }
+
+                        // Evaluate expression securely
+                        const parsedResult = evaluateCustomFormula(formulaInput, xVal, yVal);
+                        result = parsedResult.value;
+
+                        stepsHtml = `
+                            <div><strong>Rumus Custom:</strong> $${formulaInput}$</div>
+                            <div>• Evaluasi untuk $x = ${fx}$ dan $y = ${fy}$</div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Evaluasi:</strong> <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+                }
+
+                resElem.innerText = formatNum(result);
+                stepsElem.innerHTML = stepsHtml;
+
+            } catch (err) {
+                resElem.innerText = "Error";
+                stepsElem.innerHTML = `<div class="text-red-400">⚠️ Terjadi kesalahan penulisan rumus atau matematika imajiner/pembagian nol.</div>`;
+            }
+
+            triggerMathJax();
+        }
+
+        // Initialize default tab
+        window.onload = function() {
+            switchTab(1);
+        };
+    </script>
+</body>
+</html>
