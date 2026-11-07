@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Math Slider</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            touch-action: manipulation;
+        }
+        
+        .tile-red {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            box-shadow: 0 5px 0 0 #7f1d1d, inset 0 2px 0 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid #f87171;
+        }
+        .tile-red:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 0 #7f1d1d, inset 0 2px 0 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .tile-blue {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            box-shadow: 0 5px 0 0 #1e3a8a, inset 0 2px 0 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid #60a5fa;
+        }
+        .tile-blue:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 0 #1e3a8a, inset 0 2px 0 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-slot {
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.6);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+        }
+
+        .active-frame {
+            ring: 4px;
+            ring-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-3 md:p-6">
+
+    <!-- Header Section -->
+    <div class="text-center mb-4 max-w-4xl w-full">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-amber-400 tracking-wide drop-shadow-md">
+            DUAL PUZZLE GESER
+        </h1>
+        <p class="text-slate-400 text-xs md:text-sm mt-1">
+            Selesaikan Frame Merah (2x4) dan Frame Biru (2x6) untuk memenangkan permainan!
+        </p>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 mb-5 w-full max-w-4xl border border-slate-800 flex justify-around items-center shadow-lg">
+        <div class="text-center">
+            <span class="text-xs uppercase text-slate-400 font-semibold block">Langkah Total</span>
+            <span id="moveCount" class="text-2xl md:text-3xl font-bold text-amber-400">0</span>
+        </div>
+        <div class="h-8 w-px bg-slate-800"></div>
+        <div class="text-center">
+            <span class="text-xs uppercase text-slate-400 font-semibold block">Waktu</span>
+            <span id="timer" class="text-2xl md:text-3xl font-bold text-emerald-400">00:00</span>
+        </div>
+        <div class="h-8 w-px bg-slate-800"></div>
+        <div class="text-center">
+            <button id="btnSound" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
+                <svg id="soundOnIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                <svg id="soundOffIcon" class="w-6 h-6 hidden text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Boards Container (Responsive Side-by-Side) -->
+    <div class="flex flex-col xl:flex-row items-center justify-center gap-6 max-w-6xl w-full">
+        
+        <!-- Frame 1: Red (2x4) -->
+        <div class="flex flex-col items-center w-full max-w-md">
+            <div class="flex justify-between items-center w-full mb-2 px-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block animate-pulse"></span> Frame 1 (2×4)
+                </span>
+                <span id="statusFrame1" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Belum Selesai</span>
+            </div>
+            <div class="bg-red-950/40 p-3 md:p-4 rounded-3xl shadow-2xl border-2 border-red-900/60 w-full">
+                <div id="board1" class="grid grid-cols-4 gap-2.5 bg-black/60 p-3 rounded-2xl select-none">
+                    <!-- Frame 1 Tiles -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Frame 2: Blue (2x6) -->
+        <div class="flex flex-col items-center w-full max-w-xl">
+            <div class="flex justify-between items-center w-full mb-2 px-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block animate-pulse"></span> Frame 2 (2×6)
+                </span>
+                <span id="statusFrame2" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Belum Selesai</span>
+            </div>
+            <div class="bg-blue-950/40 p-3 md:p-4 rounded-3xl shadow-2xl border-2 border-blue-900/60 w-full">
+                <div id="board2" class="grid grid-cols-6 gap-2 bg-black/60 p-3 rounded-2xl select-none">
+                    <!-- Frame 2 Tiles -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Controls & Goal Panel -->
+    <div class="w-full max-w-4xl mt-6 flex flex-col gap-3">
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+            <button id="btnReset" class="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold text-slate-100 transition shadow-md active:scale-95 border border-slate-700">
+                Reset Posisi Awal
+            </button>
+            <button id="btnShuffle" class="flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition shadow-md active:scale-95">
+                Acak Kedua Frame (Shuffle)
+            </button>
+        </div>
+
+        <!-- Target Goal Preview Toggle -->
+        <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-sm font-bold text-slate-200 block">Target Susunan Soal</span>
+                    <span class="text-xs text-slate-400">Target disembunyikan sampai kamu menekan tombol di samping.</span>
+                </div>
+                <button id="btnToggleGoal" class="text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-md whitespace-nowrap">
+                    Lihat Target
+                </button>
+            </div>
+            
+            <!-- Hidden Goal Content -->
+            <div id="goalContainer" class="hidden mt-2 p-4 bg-slate-950 rounded-xl border border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Goal Frame 1 -->
+                <div class="bg-red-950/30 p-3 rounded-lg border border-red-900/40">
+                    <span class="text-xs font-bold text-red-400 block mb-1">Target Frame 1 (2x4):</span>
+                    <div id="goalText1" class="text-sm font-bold text-amber-300 font-mono tracking-wider">
+                        A = 2 6 / B = 4 [ ]
+                    </div>
+                </div>
+                <!-- Goal Frame 2 -->
+                <div class="bg-blue-950/30 p-3 rounded-lg border border-blue-900/40">
+                    <span class="text-xs font-bold text-blue-400 block mb-1">Target Frame 2 (2x6):</span>
+                    <div id="goalText2" class="text-sm font-bold text-amber-300 font-mono tracking-wider">
+                        B 3 = 5 = 7 / + × A 9 8 [ ]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Overlay Modal (Win Notification) -->
+    <div id="winModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl transform transition-all scale-95 opacity-0" id="winModalContent">
+            <div class="text-6xl mb-3">🏆</div>
+            <h2 class="text-3xl font-black text-amber-400 mb-1">HEBAT!</h2>
+            <p class="text-slate-300 text-sm mb-5">Kamu berhasil menyelesaikan kedua puzzle!</p>
+            
+            <div class="bg-slate-950 p-4 rounded-2xl mb-6 flex justify-around text-center border border-slate-800">
+                <div>
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Total Langkah</span>
+                    <span id="finalMoves" class="block text-2xl font-extrabold text-amber-400">0</span>
+                </div>
+                <div class="h-10 w-px bg-slate-800"></div>
+                <div>
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Waktu Selesai</span>
+                    <span id="finalTime" class="block text-2xl font-extrabold text-emerald-400">00:00</span>
+                </div>
+            </div>
+
+            <button id="btnCloseModal" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl transition shadow-lg text-base">
+                Main Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION FOR FRAME 1 (RED - 2x4)
+        const F1_ROWS = 2, F1_COLS = 4;
+        const F1_INITIAL = ['6', 'A', '4', 'B', '2', '=', '=', ''];
+        let F1_TARGET = ['A', '=', '2', '6', 'B', '=', '4', ''];
+
+        // CONFIGURATION FOR FRAME 2 (BLUE - 2x6)
+        const F2_ROWS = 2, F2_COLS = 6;
+        // Initial state from earlier image:
+        // Row 1: B, 3, =, 5, =, 7
+        // Row 2: +, ×, A, 9, 8, [Empty]
+        const F2_INITIAL = ['B', '3', '=', '5', '=', '7', '+', '×', 'A', '9', '8', ''];
+        
+        // NEW TARGET STATE FROM LATEST IMAGE:
+        // Row 1: A, ×, 3, =, 7, 8
+        // Row 2: B, +, 5, =, 9, [Empty]
+        let F2_TARGET = ['A', '×', '3', '=', '7', '8', 'B', '+', '5', '=', '9', ''];
+
+        // GAME STATE
+        let board1State = [...F1_INITIAL];
+        let board2State = [...F2_INITIAL];
+        let moves = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let gameStarted = false;
+        let soundEnabled = true;
+
+        // Web Audio API
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(freq, type = 'sine', duration = 0.1) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioContext();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        // DOM Elements
+        const board1El = document.getElementById('board1');
+        const board2El = document.getElementById('board2');
+        const moveCountEl = document.getElementById('moveCount');
+        const timerEl = document.getElementById('timer');
+        const statusFrame1 = document.getElementById('statusFrame1');
+        const statusFrame2 = document.getElementById('statusFrame2');
+        
+        const btnReset = document.getElementById('btnReset');
+        const btnShuffle = document.getElementById('btnShuffle');
+        const btnSound = document.getElementById('btnSound');
+        const soundOnIcon = document.getElementById('soundOnIcon');
+        const soundOffIcon = document.getElementById('soundOffIcon');
+        
+        const winModal = document.getElementById('winModal');
+        const winModalContent = document.getElementById('winModalContent');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        
+        const btnToggleGoal = document.getElementById('btnToggleGoal');
+        const goalContainer = document.getElementById('goalContainer');
+        const goalText1El = document.getElementById('goalText1');
+        const goalText2El = document.getElementById('goalText2');
+
+        // Render Frame 1
+        function renderBoard1() {
+            board1El.innerHTML = '';
+            board1State.forEach((val, idx) => {
+                const tileNode = document.createElement('div');
+                const isBlank = val === '';
+                
+                tileNode.className = `aspect-square flex items-center justify-center rounded-xl text-xl md:text-2xl font-bold cursor-pointer transition-all duration-150 select-none ${
+                    isBlank ? 'empty-slot' : 'tile-red text-white'
+                }`;
+                
+                if (!isBlank) {
+                    tileNode.innerText = val;
+                    tileNode.addEventListener('click', () => handleTileClick(1, idx));
+                }
+
+                board1El.appendChild(tileNode);
+            });
+        }
+
+        // Render Frame 2
+        function renderBoard2() {
+            board2El.innerHTML = '';
+            board2State.forEach((val, idx) => {
+                const tileNode = document.createElement('div');
+                const isBlank = val === '';
+                
+                tileNode.className = `aspect-square flex items-center justify-center rounded-xl text-lg md:text-xl font-bold cursor-pointer transition-all duration-150 select-none ${
+                    isBlank ? 'empty-slot' : 'tile-blue text-white'
+                }`;
+                
+                if (!isBlank) {
+                    tileNode.innerText = val;
+                    tileNode.addEventListener('click', () => handleTileClick(2, idx));
+                }
+
+                board2El.appendChild(tileNode);
+            });
+        }
+
+        // Get adjacent cells for a board
+        function getAdjacentIndices(idx, rows, cols) {
+            const row = Math.floor(idx / cols);
+            const col = idx % cols;
+            const adjacent = [];
+
+            if (row > 0) adjacent.push(idx - cols); // Up
+            if (row < rows - 1) adjacent.push(idx + cols); // Down
+            if (col > 0) adjacent.push(idx - 1); // Left
+            if (col < cols - 1) adjacent.push(idx + 1); // Right
+
+            return adjacent;
+        }
+
+        // Click Handler for Tiles
+        function handleTileClick(boardNum, idx) {
+            const state = boardNum === 1 ? board1State : board2State;
+            const rows = boardNum === 1 ? F1_ROWS : F2_ROWS;
+            const cols = boardNum === 1 ? F1_COLS : F2_COLS;
+
+            const emptyIdx = state.indexOf('');
+            const adjacent = getAdjacentIndices(idx, rows, cols);
+
+            if (adjacent.includes(emptyIdx)) {
+                // Swap
+                state[emptyIdx] = state[idx];
+                state[idx] = '';
+
+                moves++;
+                moveCountEl.innerText = moves;
+                playSound(boardNum === 1 ? 440 : 520, 'sine', 0.08);
+
+                if (!gameStarted) startTimer();
+
+                if (boardNum === 1) renderBoard1();
+                else renderBoard2();
+
+                checkStatus();
+            } else {
+                playSound(180, 'triangle', 0.1);
+            }
+        }
+
+        // Timer Functions
+        function startTimer() {
+            gameStarted = true;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                const secs = String(timerSeconds % 60).padStart(2, '0');
+                timerEl.innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            gameStarted = false;
+        }
+
+        function resetTimer() {
+            stopTimer();
+            timerSeconds = 0;
+            timerEl.innerText = '00:00';
+        }
+
+        // Shuffle helper for any board
+        function shuffleSingleBoard(initialState, rows, cols) {
+            let state = [...initialState];
+            let lastEmpty = -1;
+            for (let i = 0; i < 60; i++) {
+                const emptyIdx = state.indexOf('');
+                const adjacent = getAdjacentIndices(emptyIdx, rows, cols).filter(idx => idx !== lastEmpty);
+                const randomChoice = adjacent[Math.floor(Math.random() * adjacent.length)];
+                
+                state[emptyIdx] = state[randomChoice];
+                state[randomChoice] = '';
+                lastEmpty = emptyIdx;
+            }
+            return state;
+        }
+
+        // Shuffle Both Boards
+        function shuffleAll() {
+            resetTimer();
+            moves = 0;
+            moveCountEl.innerText = moves;
+
+            board1State = shuffleSingleBoard(F1_INITIAL, F1_ROWS, F1_COLS);
+            board2State = shuffleSingleBoard(F2_INITIAL, F2_ROWS, F2_COLS);
+
+            renderBoard1();
+            renderBoard2();
+            checkStatus();
+            playSound(600, 'square', 0.15);
+        }
+
+        // Reset to initial positions
+        function resetGame() {
+            resetTimer();
+            moves = 0;
+            moveCountEl.innerText = moves;
+
+            board1State = [...F1_INITIAL];
+            board2State = [...F2_INITIAL];
+
+            renderBoard1();
+            renderBoard2();
+            checkStatus();
+            playSound(300, 'sine', 0.1);
+        }
+
+        // Check completion status for both frames
+        function checkStatus() {
+            const f1Solved = board1State.every((val, i) => val === F1_TARGET[i]);
+            const f2Solved = board2State.every((val, i) => val === F2_TARGET[i]);
+
+            statusFrame1.innerText = f1Solved ? 'Selesai ✓' : 'Belum Selesai';
+            statusFrame1.className = `text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                f1Solved ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+            }`;
+
+            statusFrame2.innerText = f2Solved ? 'Selesai ✓' : 'Belum Selesai';
+            statusFrame2.className = `text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                f2Solved ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+            }`;
+
+            if (f1Solved && f2Solved && moves > 0) {
+                stopTimer();
+                playSound(523.25, 'sine', 0.2);
+                setTimeout(() => playSound(659.25, 'sine', 0.3), 150);
+                setTimeout(() => playSound(783.99, 'sine', 0.4), 300);
+
+                document.getElementById('finalMoves').innerText = moves;
+                document.getElementById('finalTime').innerText = timerEl.innerText;
+
+                winModal.classList.remove('hidden');
+                setTimeout(() => {
+                    winModalContent.classList.remove('scale-95', 'opacity-0');
+                    winModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+        }
+
+        // Format Goal Display
+        function updateGoalDisplay() {
+            const f1r1 = F1_TARGET.slice(0, 4).map(v => v || '[ ]').join(' ');
+            const f1r2 = F1_TARGET.slice(4, 8).map(v => v || '[ ]').join(' ');
+            goalText1El.innerText = `${f1r1} / ${f1r2}`;
+
+            const f2r1 = F2_TARGET.slice(0, 6).map(v => v || '[ ]').join(' ');
+            const f2r2 = F2_TARGET.slice(6, 12).map(v => v || '[ ]').join(' ');
+            goalText2El.innerText = `${f2r1} / ${f2r2}`;
+        }
+
+        // Event Listeners
+        btnReset.addEventListener('click', resetGame);
+        btnShuffle.addEventListener('click', shuffleAll);
+
+        btnCloseModal.addEventListener('click', () => {
+            winModalContent.classList.remove('scale-100', 'opacity-100');
+            winModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                winModal.classList.add('hidden');
+                shuffleAll();
+            }, 200);
+        });
+
+        btnSound.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            soundOnIcon.classList.toggle('hidden', !soundEnabled);
+            soundOffIcon.classList.toggle('hidden', soundEnabled);
+        });
+
+        btnToggleGoal.addEventListener('click', () => {
+            const isHidden = goalContainer.classList.contains('hidden');
+            if (isHidden) {
+                goalContainer.classList.remove('hidden');
+                btnToggleGoal.innerText = 'Sembunyikan Target';
+                btnToggleGoal.classList.replace('bg-amber-500', 'bg-slate-700');
+                btnToggleGoal.classList.replace('text-slate-950', 'text-slate-200');
+                playSound(500, 'sine', 0.1);
+            } else {
+                goalContainer.classList.add('hidden');
+                btnToggleGoal.innerText = 'Lihat Target';
+                btnToggleGoal.classList.replace('bg-slate-700', 'bg-amber-500');
+                btnToggleGoal.classList.replace('text-slate-200', 'text-slate-950');
+                playSound(400, 'sine', 0.1);
+            }
+        });
+
+        // Initialize
+        updateGoalDisplay();
+        renderBoard1();
+        renderBoard2();
+        checkStatus();
+    </script>
+</body>
+</html>
