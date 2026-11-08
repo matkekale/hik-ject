@@ -164,13 +164,6 @@
 
             <!-- Input Tambahan Khusus (Variabel C atau Rumus Custom) -->
             <div id="extraInputs" class="mb-6 space-y-4 hidden">
-                <!-- Variabel C untuk Soal 2 -->
-                <div id="containerVarC" class="flex flex-col max-w-xs mx-auto hidden">
-                    <label for="valC" class="mb-1 text-amber-300 font-semibold text-xs text-center uppercase tracking-wider">Konstanta $C$ (Khusus Soal 2) :</label>
-                    <input type="number" id="valC" value="4" step="any" oninput="calculate()" 
-                        class="gold-input px-4 py-2 rounded-lg text-center font-bold text-amber-200" placeholder="Nilai C">
-                </div>
-
                 <!-- Custom Equation Input untuk Soal 7 -->
                 <div id="containerCustomEquation" class="flex flex-col hidden">
                     <label for="customFormula" class="mb-1 text-amber-300 font-semibold text-xs uppercase tracking-wider">
@@ -211,38 +204,31 @@
         const functionsData = {
             1: {
                 title: "Fungsi Soal 1",
-                latexFormula: "f(x, y) = 6x + 12y + 35",
-                hasC: false
+                latexFormula: "f(x, y) = 6x + 12y + 35"
             },
             2: {
                 title: "Fungsi Soal 2",
-                latexFormula: "f(x, y) = 3x^2 + 15x + 2Cxy",
-                hasC: true
+                latexFormula: "f(x, y) = 3x^2 + 15x + 14xy"
             },
             3: {
                 title: "Fungsi Soal 3",
-                latexFormula: "f(x, y) = 6xy - 10x^2y - 7xy^2",
-                hasC: false
+                latexFormula: "f(x, y) = 6xy - 10x^2y - 7xy^2"
             },
             4: {
                 title: "Fungsi Soal 4",
-                latexFormula: "f(x, y) = (x - y)^2 + (y - x)^2 - 3x^2y",
-                hasC: false
+                latexFormula: "f(x, y) = (x - y)^2 + (y - x)^2 - 3x^2y"
             },
             5: {
                 title: "Fungsi Soal 5",
-                latexFormula: "f(x, y) = x\\sqrt{16y} + 14y\\sqrt{x} + 12\\sqrt{x + y}",
-                hasC: false
+                latexFormula: "f(x, y) = x\\sqrt{16y} + 14y\\sqrt{x} + 12\\sqrt{x + y}"
             },
             6: {
                 title: "Fungsi Soal 6",
-                latexFormula: "f(x, y) = |3y - 2x^2| - 5xy",
-                hasC: false
+                latexFormula: "f(x, y) = |3y - 2x^2| - 5xy"
             },
             7: {
                 title: "Mode Custom (Buat Fungsi Sendiri)",
-                latexFormula: "\\text{[Disesuaikan Input]}",
-                hasC: false
+                latexFormula: "\\text{[Disesuaikan Input]}"
             }
         };
 
@@ -272,20 +258,13 @@
 
             // Handle extra inputs
             const extraContainer = document.getElementById('extraInputs');
-            const containerC = document.getElementById('containerVarC');
             const containerCustom = document.getElementById('containerCustomEquation');
 
-            if (tabNum === 2) {
+            if (tabNum === 7) {
                 extraContainer.classList.remove('hidden');
-                containerC.classList.remove('hidden');
-                containerCustom.classList.add('hidden');
-            } else if (tabNum === 7) {
-                extraContainer.classList.remove('hidden');
-                containerC.classList.add('hidden');
                 containerCustom.classList.remove('hidden');
             } else {
                 extraContainer.classList.add('hidden');
-                containerC.classList.add('hidden');
                 containerCustom.classList.add('hidden');
             }
 
@@ -330,7 +309,6 @@
         function calculate() {
             const xVal = parseFloat(document.getElementById('valX').value);
             const yVal = parseFloat(document.getElementById('valY').value);
-            const cVal = parseFloat(document.getElementById('valC').value) || 0;
             const resElem = document.getElementById('resultOutput');
             const stepsElem = document.getElementById('stepsContainer');
 
@@ -343,7 +321,6 @@
 
             const fx = formatNum(xVal);
             const fy = formatNum(yVal);
-            const fc = formatNum(cVal);
 
             let result = 0;
             let stepsHtml = '';
@@ -366,17 +343,17 @@
                         break;
 
                     case 2:
-                        // f(x,y) = 3x^2 + 15x + 2Cxy
+                        // f(x,y) = 3x^2 + 15x + 14xy
                         const term2_1 = 3 * Math.pow(xVal, 2);
                         const term2_2 = 15 * xVal;
-                        const term2_3 = 2 * cVal * xVal * yVal;
+                        const term2_3 = 14 * xVal * yVal;
                         result = term2_1 + term2_2 + term2_3;
 
                         stepsHtml = `
-                            <div><strong>Substitusi ($C = ${fc}$):</strong> $f(${fx}, ${fy}) = 3(${fx})^2 + 15(${fx}) + 2(${fc})(${fx})(${fy})$</div>
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = 3(${fx})^2 + 15(${fx}) + 14(${fx})(${fy})$</div>
                             <div>• Suku $3x^2 = 3 \\times (${fx})^2 = $ <strong>$${formatNum(term2_1)}$</strong></div>
                             <div>• Suku $15x = 15 \\times ${fx} = $ <strong>$${formatNum(term2_2)}$</strong></div>
-                            <div>• Suku $2Cxy = 2 \\times ${fc} \\times ${fx} \\times ${fy} = $ <strong>$${formatNum(term2_3)}$</strong></div>
+                            <div>• Suku $14xy = 14 \\times ${fx} \\times ${fy} = $ <strong>$${formatNum(term2_3)}$</strong></div>
                             <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term2_1)} + ${formatNum(term2_2)} + ${formatNum(term2_3)} = $ <strong>$${formatNum(result)}$</strong></div>
                         `;
                         break;
