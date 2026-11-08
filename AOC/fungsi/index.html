@@ -130,6 +130,7 @@
                 <button onclick="switchTab(4)" id="tab-4" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 4</button>
                 <button onclick="switchTab(5)" id="tab-5" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 5</button>
                 <button onclick="switchTab(6)" id="tab-6" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap">Soal 6</button>
+                <button onclick="switchTab(0)" id="tab-0" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap border-amber-500/80">🎮 Soal Simulasi</button>
                 <button onclick="switchTab(7)" id="tab-7" class="tab-btn px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap border-yellow-400/80">✨ Mode Custom</button>
             </div>
 
@@ -164,6 +165,15 @@
 
             <!-- Input Tambahan Khusus (Variabel C atau Rumus Custom) -->
             <div id="extraInputs" class="mb-6 space-y-4 hidden">
+                <!-- Input Variabel C khusus Soal Simulasi -->
+                <div id="containerValC" class="flex flex-col hidden">
+                    <label id="labelC" for="valC" class="mb-1 text-amber-200 font-semibold text-xs sm:text-sm uppercase tracking-wider">
+                        Nilai $C$ :
+                    </label>
+                    <input type="number" id="valC" value="5" step="any" oninput="calculate()" 
+                        class="gold-input px-4 py-2.5 rounded-lg text-lg text-center font-bold" placeholder="Masukkan nilai C">
+                </div>
+
                 <!-- Custom Equation Input untuk Soal 7 -->
                 <div id="containerCustomEquation" class="flex flex-col hidden">
                     <label for="customFormula" class="mb-1 text-amber-300 font-semibold text-xs uppercase tracking-wider">
@@ -202,6 +212,10 @@
         let currentTab = 1;
 
         const functionsData = {
+            0: {
+                title: "🎮 Soal Simulasi",
+                latexFormula: "f(x, y) = 3x + 4y + 7"
+            },
             1: {
                 title: "Fungsi Soal 1",
                 latexFormula: "f(x, y) = 6x + 12y + 35"
@@ -240,7 +254,7 @@
 
         function switchTab(tabNum) {
             currentTab = tabNum;
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 0; i <= 7; i++) {
                 const btn = document.getElementById(`tab-${i}`);
                 if (btn) {
                     if (i === tabNum) btn.classList.add('active');
@@ -327,6 +341,21 @@
 
             try {
                 switch (currentTab) {
+                    case 0:
+                        // f(x,y) = 3x + 4y + 7
+                        const term0_1 = 3 * xVal;
+                        const term0_2 = 4 * yVal;
+                        result = term0_1 + term0_2 + 7;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = 3(${fx}) + 4(${fy}) + 7$</div>
+                            <div>• Suku $3x = 3 \\times ${fx} = $ <strong>$${formatNum(term0_1)}$</strong></div>
+                            <div>• Suku $4y = 4 \\times ${fy} = $ <strong>$${formatNum(term0_2)}$</strong></div>
+                            <div>• Konstanta = <strong>$7$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term0_1)} + ${formatNum(term0_2)} + 7 = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
                     case 1:
                         // f(x,y) = 6x + 12y + 35
                         const term1_1 = 6 * xVal;
@@ -431,6 +460,33 @@
                             <div>• Nilai Mutlak $|${formatNum(insideAbs)}| = $ <strong>$${formatNum(absVal)}$</strong></div>
                             <div>• Suku $5xy = 5 \\times ${fx} \\times ${fy} = $ <strong>$${formatNum(term6_2)}$</strong></div>
                             <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(absVal)} - ${formatNum(term6_2)} = $ <strong>$${formatNum(result)}$</strong></div>
+                        `;
+                        break;
+
+                    case 8:
+                        // f(x,y) = 3x + 4y + 7C
+                        const cValElem = document.getElementById('valC');
+                        const cVal = cValElem ? parseFloat(cValElem.value) : 0;
+
+                        if (isNaN(cVal)) {
+                            resElem.innerText = "-";
+                            stepsElem.innerHTML = `<div class="text-amber-400 italic text-center">Silakan masukkan nilai $C$ yang valid.</div>`;
+                            triggerMathJax();
+                            return;
+                        }
+
+                        const fc = formatNum(cVal);
+                        const term8_1 = 3 * xVal;
+                        const term8_2 = 4 * yVal;
+                        const term8_3 = 7 * cVal;
+                        result = term8_1 + term8_2 + term8_3;
+
+                        stepsHtml = `
+                            <div><strong>Substitusi:</strong> $f(${fx}, ${fy}) = 3(${fx}) + 4(${fy}) + 7(${fc})$</div>
+                            <div>• Suku $3x = 3 \\times ${fx} = $ <strong>$${formatNum(term8_1)}$</strong></div>
+                            <div>• Suku $4y = 4 \\times ${fy} = $ <strong>$${formatNum(term8_2)}$</strong></div>
+                            <div>• Suku $7C = 7 \\times ${fc} = $ <strong>$${formatNum(term8_3)}$</strong></div>
+                            <div class="pt-1 border-t border-amber-800/40 text-amber-300"><strong>Hasil Total:</strong> $${formatNum(term8_1)} + ${formatNum(term8_2)} + ${formatNum(term8_3)} = $ <strong>$${formatNum(result)}$</strong></div>
                         `;
                         break;
 
